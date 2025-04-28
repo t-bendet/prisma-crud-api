@@ -1,0 +1,28 @@
+{
+  "workbench.colorCustomizations": {
+    "[Default Dark+]": {
+      "editorBracketHighlight.foreground1": "#E6E6E6",
+      "editorBracketHighlight.foreground2": "#FF75B5",
+      "editorBracketHighlight.foreground3": "#19f9d8",
+      "editorBracketHighlight.foreground4": "#B084EB",
+      "editorBracketHighlight.foreground5": "#45A9F9",
+      "editorBracketHighlight.foreground6": "#FFB86C",
+      "editorBracketHighlight.unexpectedBracket.foreground": "#FF2C6D",
+      "editorBracketPairGuide.background1": "#FFB86C",
+      "editorBracketPairGuide.background2": "#FF75B5",
+      "editorBracketPairGuide.background3": "#45A9F9",
+      "editorBracketPairGuide.background4": "#B084EB",
+      "editorBracketPairGuide.background5": "#E6E6E6",
+      "editorBracketPairGuide.background6": "#19f9d8",
+      "editorBracketPairGuide.activeBackground1": "#FFB86C",
+      "editorBracketPairGuide.activeBackground2": "#FF75B5",
+      "editorBracketPairGuide.activeBackground3": "#45A9F9",
+      "editorBracketPairGuide.activeBackground4": "#B084EB",
+      "editorBracketPairGuide.activeBackground5": "#E6E6E6",
+      "editorBracketPairGuide.activeBackground6": "#19f9d8"
+    },
+    "activityBar.background": "#28310C",
+    "titleBar.activeBackground": "#394411",
+    "titleBar.activeForeground": "#F9FCF1"
+  }
+}
