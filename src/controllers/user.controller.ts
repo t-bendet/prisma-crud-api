@@ -12,6 +12,10 @@ export async function createUser(req: Request, res: Response) {
       data: user,
     });
   } catch (error: any) {
+    // with no validation , prisma errors
+    // console.log(error.name, " error name");
+    // console.log(error.message, " error message");
+
     // TODO use with global error handler
     // console.log(Object.keys(error));
     // console.log(error.issues);
