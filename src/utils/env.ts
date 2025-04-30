@@ -1,32 +1,41 @@
-// import dotenv from "dotenv";
-// import * as z from "zod";
+import dotenv from "dotenv";
+import * as z from "zod";
 
-// dotenv.config();
+dotenv.config();
 
-// const createEnv = () => {
-//   const EnvSchema = z.object({
-//     NODE_ENV: z.string(),
-//     PORT: z.string(),
-//     DATABASE: z.string(),
-//     DATABASE_PASSWORD: z.string(),
-//     USERNAME: z.string(),
-//   });
+// TODO handle this with app error?
+// TODO consider other connection strings patterns
 
-//   const envVars = process.env;
-//   const parsedEnv = EnvSchema.safeParse(envVars);
+type ConnectionString =
+  `mongodb+srv://${string}:${string}@${string}/${string}?retryWrites=true&w=majority&appName=${string}`;
 
-//   if (!parsedEnv.success) {
-//     throw new Error(
-//       `Invalid env provided.
-//       The following variables are missing or invalid:
-//     ${Object.entries(parsedEnv.error.flatten().fieldErrors)
-//       .map(([k, v]) => `- ${k}: ${v}`)
-//       .join("\n")}
-//       `
-//     );
-//   }
+const connectionStringRegex =
+  /^mongodb\+srv:\/\/([^:]+):([^@]+)@([^/]+)\/([^?]+)\?retryWrites=true&w=majority&appName=([^&]+)$/;
 
-//   return parsedEnv.data;
-// };
+const createEnv = () => {
+  const EnvSchema = z.object({
+    NODE_ENV: z.enum(["development", "production"]),
+    PORT: z.string(),
+    DATABASE_URL: z.custom<ConnectionString>((val) =>
+      connectionStringRegex.test(val as string)
+    ),
+  });
 
-// export const env = createEnv();
+  const envVars = process.env;
+  const parsedEnv = EnvSchema.safeParse(envVars);
+
+  if (!parsedEnv.success) {
+    throw new Error(
+      `Invalid env provided.
+      The following variables are missing or invalid:
+    ${Object.entries(parsedEnv.error.flatten().fieldErrors)
+      .map(([k, v]) => `- ${k}: ${v}`)
+      .join("\n")}
+      `
+    );
+  }
+
+  return parsedEnv.data;
+};
+
+export const env = createEnv();
