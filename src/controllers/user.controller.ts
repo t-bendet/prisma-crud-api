@@ -1,35 +1,21 @@
-import { Request, Response } from "express";
 import prisma from "../client";
-// Creating a user
-export async function createUser(req: Request, res: Response) {
-  try {
-    const user = await prisma.user.create({
-      data: req.body,
-    });
-    res.status(201).json({
-      status: true,
-      message: "User Successfully Created",
-      data: user,
-    });
-  } catch (error: any) {
-    // with no validation , prisma errors
-    // console.log(error.name, " error name");
-    // console.log(error.message, " error message");
+import catchAsync from "../utils/catchAsync";
 
-    // TODO use with global error handler
-    // console.log(Object.keys(error));
-    // console.log(error.issues);
-    // console.log(error.name, "name");
-    // console.log(error.errors);
-    res.status(500).json({
-      status: false,
-      message: "server error",
-    });
-  }
-}
+// Creating a user
+export const createUser = catchAsync(async (req, res, next) => {
+  const user = await prisma.user.create({
+    data: req.body,
+  });
+  res.status(201).json({
+    status: true,
+    message: "User Successfully Created",
+    data: user,
+  });
+});
 
 // Get all Users
-export async function getUsers(req: Request, res: Response) {
+export const getUsers = catchAsync(async (req, res, next) => {
+  console.log("object");
   const users = await prisma.user.findMany();
 
   res.json({
@@ -37,12 +23,12 @@ export async function getUsers(req: Request, res: Response) {
     message: "Users Successfully fetched",
     data: users,
   });
-}
+});
 
 // Get a single user
-export async function getUser(req: Request, res: Response) {
+export const getUser = catchAsync(async (req, res, next) => {
   const { userid } = req.params;
-  const user = await prisma.user.findFirst({
+  const user = await prisma.user.findUniqueOrThrow({
     where: {
       id: userid,
     },
@@ -53,77 +39,62 @@ export async function getUser(req: Request, res: Response) {
     message: "User Successfully fetched",
     data: user,
   });
-}
+});
 
 // deleting a user
-export async function deleteUser(req: Request, res: Response) {
+export const deleteUser = catchAsync(async (req, res, next) => {
   const { userid } = req.params;
 
-  try {
-    const user = await prisma.user.findFirst({
-      where: {
-        id: userid,
-      },
-    });
+  const user = await prisma.user.findFirst({
+    where: {
+      id: userid,
+    },
+  });
 
-    if (!user) {
-      res.status(401).json({
-        status: false,
-        message: "User not found",
-      });
-    }
-    await prisma.user.delete({
-      where: {
-        id: userid,
-      },
-    }),
-      res.status(204).json({
-        status: true,
-        message: "User Successfully deleted",
-      });
-  } catch {
-    res.status(501).json({
+  if (!user) {
+    res.status(401).json({
       status: false,
-      message: "server error",
+      message: "User not found",
     });
   }
-}
+  await prisma.user.delete({
+    where: {
+      id: userid,
+    },
+  }),
+    res.status(204).json({
+      status: true,
+      message: "User Successfully deleted",
+    });
+});
 
 // updating a single user
-export async function updateUser(req: Request, res: Response) {
-  try {
-    const { userid } = req.params;
+export const updateUser = catchAsync(async (req, res, next) => {
+  const { userid } = req.params;
 
-    const user = await prisma.user.findFirst({
-      where: {
-        id: userid,
-      },
-    });
+  const user = await prisma.user.findFirst({
+    where: {
+      id: userid,
+    },
+  });
 
-    if (!user) {
-      res.status(401).json({
-        status: false,
-        message: "User not found",
-      });
-    }
-
-    const updatedUser = await prisma.user.update({
-      where: {
-        id: userid,
-      },
-      data: req.body,
-    });
-
-    res.json({
-      status: true,
-      message: "User Successfully updated",
-      data: updatedUser,
-    });
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({
+  if (!user) {
+    res.status(401).json({
       status: false,
-      message: "server error",
+      message: "User not found",
     });
   }
-}
+
+  const updatedUser = await prisma.user.update({
+    where: {
+      id: userid,
+    },
+    data: req.body,
+  });
+
+  res.json({
+    status: true,
+    message: "User Successfully updated",
+    data: updatedUser,
+  });
+});
