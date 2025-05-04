@@ -13,12 +13,13 @@ const handleDuplicateFieldsDB = (err: any) => {
   return new AppError(message, 400);
 };
 
-// const handleValidationErrorDB = (err) => {
-//   const errors = Object.values(err.errors).map((el) => el.message);
-
-//   const message = `Invalid input data. ${errors.join(". ")}`;
-//   return new AppError(message, 400);
-// };
+const handleValidationErrorDB = (err: any) => {
+  const messageArray = err.message.split("\n");
+  const message = `Invalid input data. -  ${
+    messageArray[messageArray.length - 1]
+  }`;
+  return new AppError(message, 400);
+};
 
 // const handleJWTError = () =>
 //   new AppError("Invalid token. Please log in again!", 401);
@@ -70,7 +71,8 @@ export default (err: any, req: Request, res: Response, next: NextFunction) => {
   //     console.log(Object.keys(error), "keys");
   //     console.log(error instanceof PrismaClientInitializationError, "prototype");
   //     console.log(error.constructor.name, "constructor name");
-
+  console.log(err.code);
+  console.log(err.name);
   err.statusCode = err.statusCode || 500;
   err.status = err.status || "error";
 
@@ -80,12 +82,13 @@ export default (err: any, req: Request, res: Response, next: NextFunction) => {
     sendErrorDev(err, req, res);
   } else if (env.NODE_ENV === "production") {
     let error = { ...err };
-    // error.message = err.message;
+    error.message = err.message;
+    console.log(error, "error");
 
     if (error.code === "P2023") error = handleCastErrorDB(error);
     if (error.code === "P2002") error = handleDuplicateFieldsDB(error);
-    // if (error.name === "ValidationError")
-    //   error = handleValidationErrorDB(error);
+    if (error.name === "PrismaClientValidationError")
+      error = handleValidationErrorDB(error);
     // if (error.name === "JsonWebTokenError") error = handleJWTError();
     // if (error.name === "TokenExpiredError") error = handleJWTExpiredError();
     sendErrorProd(error, req, res);

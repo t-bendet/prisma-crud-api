@@ -16,18 +16,23 @@ const prisma = new PrismaClient().$extends({
   query: {
     user: {
       async create({ args, query }) {
+        console.log(args.data, "args creates");
         args.data.password;
-        args.data["password"] = await bcrypt.hash(args.data["password"], 12);
-        args.data["passwordConfirm"] = null;
-        // args.omit = {
-        //   password: true,
-        //   passwordConfirm: true,
-        // };
+        // TODO add validation for password,will fail in bcrypt hash before validation function
+        try {
+          args.data["password"] = await bcrypt.hash(args.data["password"], 12);
+        } catch (error) {
+          console.log(error);
+        }
+        args.omit = {
+          password: true,
+          passwordConfirm: true,
+        };
         return query(args);
       },
       async update({ args, query }) {
         // args.data = UserCreateInput.partial().parse(args.data);
-        console.log(args, "args");
+        console.log(args, "args update");
         if (typeof args.data.password === "string") {
           args.data.password = await bcrypt.hash(args.data["password"], 12);
         }
