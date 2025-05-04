@@ -29,7 +29,6 @@ import { env } from "../utils/env";
 //   new AppError("Your token has expired! Please log in again.", 401);
 
 const sendErrorDev = (err: any, req: Request, res: Response) => {
-  console.log(err);
   return res.status(err.statusCode).json({
     status: err.status,
     error: err,

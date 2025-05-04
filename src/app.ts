@@ -7,7 +7,7 @@ const app = express();
 
 app.use(express.json());
 
-app.use(indexRoute);
+app.use("/api/v1", indexRoute);
 
 app.use((req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
