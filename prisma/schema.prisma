@@ -20,7 +20,7 @@ model User {
   email                String    @unique
   role                 ROLE      @default(USER)
   password             String
-  passwordConfirm      String?
+  passwordConfirm      String
   passwordChangedAt    DateTime  @default(now())
   passwordResetToken   String?
   passwordResetExpires DateTime?

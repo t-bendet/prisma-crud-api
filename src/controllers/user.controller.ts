@@ -15,7 +15,6 @@ export const createUser = catchAsync(async (req, res, next) => {
 
 // Get all Users
 export const getUsers = catchAsync(async (req, res, next) => {
-  console.log("object");
   const users = await prisma.user.findMany();
 
   res.json({

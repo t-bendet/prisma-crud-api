@@ -1,20 +1,26 @@
 import express from "express";
 import globalErrorHandler from "./controllers/error.controller";
 import indexRoute from "./routes";
+import AppError from "./utils/appError";
+
 const app = express();
 
 app.use(express.json());
 
-app.use(indexRoute);
+app.use("/api/v1", indexRoute);
+
+app.all(/.*/, (req, res, next) => {
+  next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
+});
 
 app.use(globalErrorHandler);
 
 // TODO error controller
 // TODO customizing-errors-with-zoderrormap
+// TODO add validations in zod for schema
 
 // TODO npx prisma db push as part of the build process
 // TODO npx prisma db seed as part of the build process
 // TODO prisma seed
-// TODO add validations in zod for schema
 
 export default app;
