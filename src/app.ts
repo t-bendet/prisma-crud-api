@@ -9,7 +9,7 @@ app.use(express.json());
 
 app.use("/api/v1", indexRoute);
 
-app.use((req, res, next) => {
+app.all(/.*/, (req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
 });
 
