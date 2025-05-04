@@ -37,7 +37,7 @@ const sendErrorDev = (err: any, req: Request, res: Response) => {
   });
 };
 
-const sendErrorProd = (err: any, req: Request, res: Response) => {
+const sendErrorProd = (err: AppError, req: Request, res: Response) => {
   // A) Operational, trusted error: send message to client
   if (err.isOperational) {
     return res.status(err.statusCode).json({
@@ -77,6 +77,7 @@ export default (err: any, req: Request, res: Response, next: NextFunction) => {
 
   // TODO P2025 centerlize not found error? PrismaClientKnownRequestError
   // TODO  add more errors if needed
+  // TODO narrow error shapes with ts or zodå
 
   if (env.NODE_ENV === "development") {
     sendErrorDev(err, req, res);
