@@ -21,11 +21,11 @@ const handleValidationErrorDB = (err: any) => {
   return new AppError(message, 400);
 };
 
-// const handleJWTError = () =>
-//   new AppError("Invalid token. Please log in again!", 401);
+const handleJWTError = () =>
+  new AppError("Invalid token. Please log in again!", 401);
 
-// const handleJWTExpiredError = () =>
-//   new AppError("Your token has expired! Please log in again.", 401);
+const handleJWTExpiredError = () =>
+  new AppError("Your token has expired! Please log in again.", 401);
 
 const sendErrorDev = (err: any, req: Request, res: Response) => {
   // console.log(err);
@@ -70,27 +70,27 @@ export default (err: any, req: Request, res: Response, next: NextFunction) => {
   //     console.log(error.clientVersion, "clientVersion");
   //     console.log(Object.keys(error), "keys");
   //     console.log(error instanceof PrismaClientInitializationError, "prototype");
-  //     console.log(error.constructor.name, "constructor name");
-  console.log(err.code);
-  console.log(err.name);
+  // console.log(err.constructor.name, "constructor name");
+
   err.statusCode = err.statusCode || 500;
   err.status = err.status || "error";
 
-  // TODO P2025 centerlize not found error?
+  // TODO P2025 centerlize not found error? PrismaClientKnownRequestError
+  // TODO  add more errors if needed
 
   if (env.NODE_ENV === "development") {
     sendErrorDev(err, req, res);
   } else if (env.NODE_ENV === "production") {
     let error = { ...err };
     error.message = err.message;
-    console.log(error, "error");
 
-    if (error.code === "P2023") error = handleCastErrorDB(error);
-    if (error.code === "P2002") error = handleDuplicateFieldsDB(error);
+    if (error.code === "P2023") error = handleCastErrorDB(error); // PrismaClientKnownRequestError
+    if (error.code === "P2002") error = handleDuplicateFieldsDB(error); // PrismaClientKnownRequestError
     if (error.name === "PrismaClientValidationError")
-      error = handleValidationErrorDB(error);
-    // if (error.name === "JsonWebTokenError") error = handleJWTError();
-    // if (error.name === "TokenExpiredError") error = handleJWTExpiredError();
+      error = handleValidationErrorDB(error); //PrismaClientValidationError
+    // TODO jwt.verify errors ,test with jwt
+    if (error.name === "JsonWebTokenError") error = handleJWTError();
+    if (error.name === "TokenExpiredError") error = handleJWTExpiredError();
     sendErrorProd(error, req, res);
   }
 };
