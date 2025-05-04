@@ -77,6 +77,7 @@ const sendErrorDev = (err: any, req: Request, res: Response) => {
 // };
 
 // TODO change any?
+// TODO type tagging and predicates for the errors
 
 export default (err: any, req: Request, res: Response, next: NextFunction) => {
   // console.log(err.stack);
