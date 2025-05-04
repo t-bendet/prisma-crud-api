@@ -8,12 +8,10 @@ const handleCastErrorDB = (err: any) => {
   return new AppError(message, 400);
 };
 
-// const handleDuplicateFieldsDB = (err) => {
-//   const value = err.errmsg.match(/(["'])(\\?.)*?\1/)[0];
-
-//   const message = `Duplicate field value: ${value}. Please use another value!`;
-//   return new AppError(message, 400);
-// };
+const handleDuplicateFieldsDB = (err: any) => {
+  const message = `Duplicate field value: ${err.meta.target}. Please use another value!`;
+  return new AppError(message, 400);
+};
 
 // const handleValidationErrorDB = (err) => {
 //   const errors = Object.values(err.errors).map((el) => el.message);
@@ -76,7 +74,7 @@ export default (err: any, req: Request, res: Response, next: NextFunction) => {
   err.statusCode = err.statusCode || 500;
   err.status = err.status || "error";
 
-  // TODO remove this in production
+  // TODO P2025 centerlize not found error?
 
   if (env.NODE_ENV === "development") {
     sendErrorDev(err, req, res);
@@ -85,7 +83,7 @@ export default (err: any, req: Request, res: Response, next: NextFunction) => {
     // error.message = err.message;
 
     if (error.code === "P2023") error = handleCastErrorDB(error);
-    // if (error.code === 11000) error = handleDuplicateFieldsDB(error);
+    if (error.code === "P2002") error = handleDuplicateFieldsDB(error);
     // if (error.name === "ValidationError")
     //   error = handleValidationErrorDB(error);
     // if (error.name === "JsonWebTokenError") error = handleJWTError();
