@@ -15,10 +15,8 @@ app.all(/.*/, (req, res, next) => {
 
 app.use(globalErrorHandler);
 
-// TODO error controller
 // TODO customizing-errors-with-zoderrormap
 // TODO add validations in zod for schema
-
 // TODO npx prisma db push as part of the build process
 // TODO npx prisma db seed as part of the build process
 // TODO prisma seed
