@@ -1,6 +1,7 @@
 import { PrismaClient, Prisma } from "./generated/client"; // Adjust the import path based on your project structure
 import { z } from "zod";
 import bcrypt from "bcrypt";
+import { env } from "./utils/env";
 
 // export const UserCreateInput = z.object({
 //   name: z.string().max(100).describe("User name"),
@@ -19,8 +20,8 @@ const prisma = new PrismaClient({
       passwordConfirm: true,
     },
   },
-  errorFormat: "pretty",
-  log: ["query", "info", "warn", "error"],
+  errorFormat: "colorless",
+  log: env.NODE_ENV === "development" ? ["query", "info", "warn", "error"] : [],
 }).$extends({
   query: {
     user: {
@@ -31,12 +32,9 @@ const prisma = new PrismaClient({
         try {
           args.data["password"] = await bcrypt.hash(args.data["password"], 12);
         } catch (error) {
-          console.log(error);
+          // console.log(error);
         }
-        args.omit = {
-          password: true,
-          passwordConfirm: true,
-        };
+
         return query(args);
       },
       async update({ args, query }) {
