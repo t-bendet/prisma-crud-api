@@ -4,7 +4,11 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon --watch ./src  --ext ts --exec 'ts-node ./src/index.ts'"
+    "dev": "nodemon --watch ./src  --ext ts --exec 'ts-node ./src/index.ts'",
+    "db:generate": "prisma generate -schema=./prisma/schema/",
+    "db:push": "prisma db push -schema=./prisma/schema/",
+    "db:pull": "prisma db pull -schema=./prisma/schema/",
+    "db:studio": "prisma studio -schema=./prisma/schema/"
   },
   "keywords": [],
   "author": "",
