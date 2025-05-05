@@ -55,16 +55,9 @@ const sendErrorProd = (err: AppError, req: Request, res: Response) => {
   });
 };
 
-// TODO change any?
-// TODO type tagging and predicates for the errors
-
 export default (err: any, req: Request, res: Response, next: NextFunction) => {
   err.statusCode = err.statusCode || 500;
   err.status = err.status || "error";
-
-  // TODO P2025 centerlize not found error? PrismaClientKnownRequestError
-  // TODO  add more errors if needed
-  // TODO narrow error shapes with ts or zod
 
   if (env.NODE_ENV === "development") {
     sendErrorDev(err, req, res);
@@ -85,3 +78,6 @@ export default (err: any, req: Request, res: Response, next: NextFunction) => {
 
 //* if we pass 4 parameters express will recognize
 //* this as a Error handling  middleware
+
+// TODO P2025 centerlize not found error? PrismaClientKnownRequestError
+// TODO narrow error shapes with ts or zod
