@@ -3,12 +3,32 @@ import { z } from "zod";
 import bcrypt from "bcrypt";
 import { env } from "./utils/env";
 
-// export const UserCreateInput = z.object({
-//   name: z.string().max(100).describe("User name"),
-//   email: z.string().max(1000),
-//   phoneNumber: z.string().max(1000),
-//   gender: z.string().max(1000),
-// }) satisfies z.Schema<Prisma.UserUncheckedCreateInput>;
+export const UserCreateInput = z
+  .object({
+    name: z.string().min(1, "Name is required").max(100),
+    email: z.string().email("Please provide a valid email!"),
+    password: z
+      .string()
+      .min(8)
+      .max(20, "Password must be between 8 and 20 characters!"),
+    passwordConfirm: z
+      .string()
+      .min(8)
+      .max(20, "PasswordConfirm must be between 8 and 20 characters!"),
+    role: z.enum(["ADMIN", "USER"]).default("USER"), // default value
+  })
+  .strict() // strict mode
+  .refine((data) => data.password === data.passwordConfirm, {
+    message: "Password and PasswordConfirm must match!",
+  }) satisfies z.Schema<Prisma.UserUncheckedCreateInput>;
+
+export type UserReturnType = Prisma.UserGetPayload<{
+  omit: {
+    password: true;
+    passwordConfirm: true;
+    active: true;
+  };
+}>;
 
 /**
  * Prisma Client Extension
@@ -18,6 +38,7 @@ const prisma = new PrismaClient({
     user: {
       password: true,
       passwordConfirm: true,
+      active: true,
     },
   },
   errorFormat: "colorless",
@@ -27,10 +48,13 @@ const prisma = new PrismaClient({
     user: {
       async create({ args, query }) {
         // console.log(args.data, "args creates");
+        args.data = UserCreateInput.parse(args.data);
         args.data.password;
         // TODO add validation for password,will fail in bcrypt hash before validation function
         try {
-          args.data["password"] = await bcrypt.hash(args.data["password"], 12);
+          const hash = await bcrypt.hash(args.data["password"], 12);
+          args.data["password"] = hash;
+          args.data["passwordConfirm"] = hash;
         } catch (error) {
           // console.log(error);
         }
@@ -57,8 +81,27 @@ const prisma = new PrismaClient({
       },
     },
   },
+  model: {
+    user: {
+      async signUp(
+        name: string,
+        email: string,
+        password: string,
+        passwordConfirm: string
+      ) {
+        const hash = await bcrypt.hash(password, 12);
+        return prisma.user.create({
+          data: {
+            email,
+            password: hash,
+            passwordConfirm: hash,
+            name,
+          },
+        });
+      },
+    },
+  },
   // result: {
-  // slug
   //   user: {
   //     madeUpField: {
   //       needs: { name: true, role: true },

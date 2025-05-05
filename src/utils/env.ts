@@ -1,7 +1,16 @@
 import dotenv from "dotenv";
 import * as z from "zod";
+import ms from "ms";
 
 dotenv.config();
+
+const msStringValue = z.custom<ms.StringValue>((val) => {
+  try {
+    return ms(val) && typeof val === "string";
+  } catch {
+    return false;
+  }
+}, "Invalid ms duration format");
 
 type ConnectionString =
   `mongodb+srv://${string}:${string}@${string}/${string}?retryWrites=true&w=majority&appName=${string}`;
@@ -9,6 +18,7 @@ type ConnectionString =
 const connectionStringRegex =
   /^mongodb\+srv:\/\/([^:]+):([^@]+)@([^/]+)\/([^?]+)\?retryWrites=true&w=majority&appName=([^&]+)$/;
 
+// TODO refine validations
 const createEnv = () => {
   const EnvSchema = z.object({
     NODE_ENV: z.enum(["development", "production"]),
@@ -16,6 +26,9 @@ const createEnv = () => {
     DATABASE_URL: z.custom<ConnectionString>((val) =>
       connectionStringRegex.test(val as string)
     ),
+    JWT_SECRET: z.string().min(10),
+    JWT_EXPIRES_IN: msStringValue,
+    JWT_COOKIE_EXPIRES_IN: z.string(),
   });
 
   const envVars = process.env;

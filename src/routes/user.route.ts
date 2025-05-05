@@ -1,21 +1,23 @@
 import express from "express";
-import {
-  createUser,
-  deleteUser,
-  getUser,
-  getUsers,
-  updateUser,
-} from "../controllers/user.controller";
-// import { validateSchema } from "../middlewares/validation.middleware";
-// import { createUserSchema, updateUserSchema } from "../schemas/user.schema";
+import { signup } from "../controllers/auth.controller";
 
 // Users layout Route
 const userRouter = express.Router();
 
-userRouter.route("/").get(getUsers).post(createUser);
-// .post(validateSchema(createUserSchema), createUser);
+// * AUTH ROUTES (open for all)
 
-userRouter.route("/:userid").get(getUser).delete(deleteUser).patch(updateUser);
-// .patch(validateSchema(updateUserSchema), updateUser);
+userRouter.post("/signup", signup);
+// userRouter.post("/login", login);
+// userRouter.get("/logout", logout);
+
+// userRouter.route("/").get(getUsers).post(createUser);
+
+// userRouter.route("/:userid").get(getUser).delete(deleteUser).patch(updateUser);
 
 export default userRouter;
+
+// TODO  validation
+// email - email shape
+//  role - enum
+//  password - min 8 characters, 1 uppercase, 1 lowercase, 1 number, 1 special character
+// confirm password - same as password

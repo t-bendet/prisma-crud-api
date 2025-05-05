@@ -21,6 +21,11 @@ const handleValidationErrorDB = (err: any) => {
   return new AppError(message, 400);
 };
 
+const handleValidationErrorZOD = (err: any) => {
+  const message = err.issues[0].message;
+  return new AppError(message, 400);
+};
+
 const handleJWTError = () =>
   new AppError("Invalid token. Please log in again!", 401);
 
@@ -56,6 +61,10 @@ const sendErrorProd = (err: AppError, req: Request, res: Response) => {
 };
 
 export default (err: any, req: Request, res: Response, next: NextFunction) => {
+  console.log(Object.keys(err));
+  console.log(err.issues);
+
+  // TODO remove this lines and move to constructer
   err.statusCode = err.statusCode || 500;
   err.status = err.status || "error";
 
@@ -72,6 +81,7 @@ export default (err: any, req: Request, res: Response, next: NextFunction) => {
     // TODO jwt.verify errors ,test with jwt
     if (error.name === "JsonWebTokenError") error = handleJWTError();
     if (error.name === "TokenExpiredError") error = handleJWTExpiredError();
+    if (error.name === "ZodError") error = handleValidationErrorZOD(error); // ZodError
     sendErrorProd(error, req, res);
   }
 };
