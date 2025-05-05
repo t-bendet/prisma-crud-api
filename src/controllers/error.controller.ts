@@ -81,3 +81,4 @@ export default (err: any, req: Request, res: Response, next: NextFunction) => {
 
 // TODO P2025 centerlize not found error? PrismaClientKnownRequestError
 // TODO narrow error shapes with ts or zod
+// TODO Promise.reject(new AppError("Unhandled Rejection")); prisma connection issues
