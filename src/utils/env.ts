@@ -3,9 +3,6 @@ import * as z from "zod";
 
 dotenv.config();
 
-// TODO handle this with app error?
-// TODO consider other connection strings patterns
-
 type ConnectionString =
   `mongodb+srv://${string}:${string}@${string}/${string}?retryWrites=true&w=majority&appName=${string}`;
 

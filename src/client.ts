@@ -16,7 +16,7 @@ const prisma = new PrismaClient().$extends({
   query: {
     user: {
       async create({ args, query }) {
-        console.log(args.data, "args creates");
+        // console.log(args.data, "args creates");
         args.data.password;
         // TODO add validation for password,will fail in bcrypt hash before validation function
         try {
@@ -32,7 +32,7 @@ const prisma = new PrismaClient().$extends({
       },
       async update({ args, query }) {
         // args.data = UserCreateInput.partial().parse(args.data);
-        console.log(args, "args update");
+        // console.log(args, "args update");
         if (typeof args.data.password === "string") {
           args.data.password = await bcrypt.hash(args.data["password"], 12);
         }

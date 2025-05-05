@@ -22,7 +22,6 @@ prisma.$connect().then(() => {
     })
   );
 });
-// TODO connect is not necessary,consider removing it
 // we want this to fail if we can't connect to the database
 // .catch((err) => console.log(`Error : can't connect to DB`, err));
 

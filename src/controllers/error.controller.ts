@@ -55,29 +55,9 @@ const sendErrorProd = (err: AppError, req: Request, res: Response) => {
   });
 };
 
-// TODO change any?
-// TODO type tagging and predicates for the errors
-
 export default (err: any, req: Request, res: Response, next: NextFunction) => {
-  // console.log(err.stack);
-  //     console.log(error.code, "code");
-  //     console.log(error.stack, "stack");
-  //     console.log(error.errorCode, "errorCode");
-  //     console.log(error.retryable, "retryable");
-  //     console.log(error.name, "name");
-  //     console.log(error.meta, "meta");
-  //     console.log(error.message, "message");
-  //     console.log(error.clientVersion, "clientVersion");
-  //     console.log(Object.keys(error), "keys");
-  //     console.log(error instanceof PrismaClientInitializationError, "prototype");
-  // console.log(err.constructor.name, "constructor name");
-
   err.statusCode = err.statusCode || 500;
   err.status = err.status || "error";
-
-  // TODO P2025 centerlize not found error? PrismaClientKnownRequestError
-  // TODO  add more errors if needed
-  // TODO narrow error shapes with ts or zodå
 
   if (env.NODE_ENV === "development") {
     sendErrorDev(err, req, res);
@@ -98,3 +78,7 @@ export default (err: any, req: Request, res: Response, next: NextFunction) => {
 
 //* if we pass 4 parameters express will recognize
 //* this as a Error handling  middleware
+
+// TODO P2025 centerlize not found error? PrismaClientKnownRequestError
+// TODO narrow error shapes with ts or zod
+// TODO Promise.reject(new AppError("Unhandled Rejection")); prisma connection issues
