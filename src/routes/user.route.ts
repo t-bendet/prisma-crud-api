@@ -1,5 +1,6 @@
 import express from "express";
 import { signup } from "../controllers/auth.controller";
+import { getUsers } from "../controllers/user.controller";
 
 // Users layout Route
 const userRouter = express.Router();
@@ -10,7 +11,7 @@ userRouter.post("/signup", signup);
 // userRouter.post("/login", login);
 // userRouter.get("/logout", logout);
 
-// userRouter.route("/").get(getUsers).post(createUser);
+// userRouter.route("/").get(getUsers);
 
 // userRouter.route("/:userid").get(getUser).delete(deleteUser).patch(updateUser);
 
