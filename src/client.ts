@@ -12,7 +12,16 @@ import bcrypt from "bcrypt";
 /**
  * Prisma Client Extension
  */
-const prisma = new PrismaClient().$extends({
+const prisma = new PrismaClient({
+  omit: {
+    user: {
+      password: true,
+      passwordConfirm: true,
+    },
+  },
+  errorFormat: "pretty",
+  log: ["query", "info", "warn", "error"],
+}).$extends({
   query: {
     user: {
       async create({ args, query }) {
