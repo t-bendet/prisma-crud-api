@@ -22,8 +22,9 @@ const handleValidationErrorDB = (err: any) => {
 };
 
 const handleValidationErrorZOD = (err: any) => {
-  // TODO discriminate betwwen different errors code('invalid_type', 'too_small', 'too_big')
-  const message = err.issues[0].message;
+  const message = err.issues
+    .map((t: any) => `${t.path[0] ?? ""}: ${t.message}`)
+    .join(", ");
   return new AppError(message, 400);
 };
 
@@ -62,13 +63,9 @@ const sendErrorProd = (err: AppError, req: Request, res: Response) => {
 };
 
 export default (err: any, req: Request, res: Response, next: NextFunction) => {
-  console.log(Object.keys(err));
-  console.log(err.issues);
-
   // TODO remove this lines and move to constructer
   err.statusCode = err.statusCode || 500;
   err.status = err.status || "error";
-
   if (env.NODE_ENV === "development") {
     sendErrorDev(err, req, res);
   } else if (env.NODE_ENV === "production") {
