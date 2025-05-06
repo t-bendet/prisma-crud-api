@@ -56,7 +56,6 @@ export const createAndSendToken = (
 
 export const signup = catchAsync(async (req, res, next) => {
   const { name, email, password, passwordConfirm } = req.body;
-
   const newUser = await prisma.user.create({
     data: {
       name,
@@ -67,4 +66,20 @@ export const signup = catchAsync(async (req, res, next) => {
   });
 
   createAndSendToken(newUser, 201, req, res);
+});
+
+export const login = catchAsync(async (req, res, next) => {
+  const { email, password } = req.body;
+
+  // * 2) Check if user exists && password is correct
+  // const user = await User.findOne({
+  //   email,
+  // }).select("+password");
+
+  // if (!user || !(await user.correctPassword(password, user.password))) {
+  //   return next(new AppError("Incorrect email or password", 401));
+  // }
+
+  // * 3) Return new token to client
+  // createAndSendToken(user, 200, req, res);
 });

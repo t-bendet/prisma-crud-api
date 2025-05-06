@@ -1,6 +1,5 @@
 import { Prisma } from "@prisma/client";
 import bcrypt from "bcrypt";
-import { UserCreateInputSchema } from "../schemas/user.schema";
 
 const hashPassword = async (password: string): Promise<string> => {
   return await bcrypt.hash(password, 12);
@@ -10,8 +9,6 @@ export const UserExtensions = Prisma.defineExtension({
   query: {
     user: {
       async create({ args, query }) {
-        // TODO consider validating here
-        args.data = UserCreateInputSchema.parse(args.data);
         const hashedPassword = await hashPassword(args.data.password);
         args.data.password = hashedPassword;
         args.data.passwordConfirm = hashedPassword;
@@ -19,7 +16,7 @@ export const UserExtensions = Prisma.defineExtension({
       },
 
       async update({ args, query }) {
-        // TODO validate here (one for password and one for other fields)
+        // if password and password confirm exist ,iit can only be update password route
         if (args.data.password && args.data.passwordConfirm) {
           const hashedPassword = await hashPassword(
             args.data.password as string

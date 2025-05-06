@@ -15,11 +15,11 @@ export const UserCreateInputSchema = z
       .string({ message: "email is required" })
       .email("Please provide a valid email!"),
     password: z
-      .string()
+      .string({ message: "Password is required" })
       .min(8)
       .max(20, "Password must be between 8 and 20 characters!"),
     passwordConfirm: z
-      .string()
+      .string({ message: "PasswordConfirm is required" })
       .min(8)
       .max(20, "PasswordConfirm must be between 8 and 20 characters!"),
   })
@@ -28,4 +28,4 @@ export const UserCreateInputSchema = z
     message: "Password and PasswordConfirm must match!",
   }) satisfies z.Schema<Prisma.UserUncheckedCreateInput>;
 
-type UserCreateInput = z.infer<typeof UserCreateInputSchema>;
+export type UserCreateInput = z.infer<typeof UserCreateInputSchema>;
