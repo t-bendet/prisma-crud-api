@@ -6,15 +6,6 @@ import { Request, Response } from "express";
 import { Prisma } from "../generated/client"; // Adjust the import path based on your project structure
 import AppError from "../utils/appError";
 
-// TODO  change this
-export type UserReturnType = Prisma.UserGetPayload<{
-  omit: {
-    password: true;
-    passwordConfirm: true;
-    active: true;
-  };
-}>;
-
 const signToken = (id: string) => {
   return jwt.sign({ id }, env.JWT_SECRET, {
     expiresIn: env.JWT_EXPIRES_IN,
@@ -22,7 +13,13 @@ const signToken = (id: string) => {
 };
 
 export const createAndSendToken = (
-  user: UserReturnType,
+  user: Prisma.UserGetPayload<{
+    omit: {
+      password: true;
+      passwordConfirm: true;
+      active: true;
+    };
+  }>,
   statusCode: number,
   req: Request,
   res: Response
