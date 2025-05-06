@@ -47,13 +47,11 @@ export const createAndSendToken = (
 export const signup = catchAsync(async (req, res, next) => {
   const { name, email, password, passwordConfirm } = req.body;
 
-  const newUser = await prisma.user.create({
-    data: {
-      name,
-      email,
-      password,
-      passwordConfirm,
-    },
+  const newUser = await prisma.user.signUp({
+    name,
+    email,
+    password,
+    passwordConfirm,
   });
 
   createAndSendToken(newUser, 201, req, res);
