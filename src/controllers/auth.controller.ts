@@ -1,8 +1,18 @@
 import jwt from "jsonwebtoken";
 import catchAsync from "../utils/catchAsync";
 import { env } from "../utils/env";
-import prisma, { UserReturnType } from "../client";
+import prisma from "../client";
 import { Request, Response } from "express";
+import { Prisma } from "../generated/client"; // Adjust the import path based on your project structure
+
+// TODO  change this
+export type UserReturnType = Prisma.UserGetPayload<{
+  omit: {
+    password: true;
+    passwordConfirm: true;
+    active: true;
+  };
+}>;
 
 const signToken = (id: string) => {
   return jwt.sign({ id }, env.JWT_SECRET, {
@@ -47,11 +57,13 @@ export const createAndSendToken = (
 export const signup = catchAsync(async (req, res, next) => {
   const { name, email, password, passwordConfirm } = req.body;
 
-  const newUser = await prisma.user.signUp({
-    name,
-    email,
-    password,
-    passwordConfirm,
+  const newUser = await prisma.user.create({
+    data: {
+      name,
+      email,
+      password,
+      passwordConfirm,
+    },
   });
 
   createAndSendToken(newUser, 201, req, res);

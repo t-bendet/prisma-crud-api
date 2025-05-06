@@ -1,6 +1,5 @@
 import express from "express";
 import { signup } from "../controllers/auth.controller";
-import { getUsers } from "../controllers/user.controller";
 
 // Users layout Route
 const userRouter = express.Router();
