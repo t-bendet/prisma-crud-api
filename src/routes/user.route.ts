@@ -1,5 +1,5 @@
 import express from "express";
-import { signup, login } from "../controllers/auth.controller";
+import { signup, login, logout } from "../controllers/auth.controller";
 import { validateSchema } from "../middlewares/validation.middleware";
 import {
   UserCreateInputSchema,
@@ -13,7 +13,7 @@ const userRouter = express.Router();
 
 userRouter.post("/signup", validateSchema(UserCreateInputSchema), signup);
 userRouter.post("/login", validateSchema(UserTempLoginInput), login);
-// userRouter.get("/logout", logout);
+userRouter.get("/logout", logout);
 
 // userRouter.route("/").get(getUsers);
 
