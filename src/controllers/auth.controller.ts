@@ -27,9 +27,8 @@ export const createAndSendToken = (
     ),
     //* cookie will only be sent on encrypted connection(https)
     //* true only if we are on production mode
-    secure: env.NODE_ENV === "production",
-    // TODO what is this?
-    // secure: req.secure || req.headers["x-forwarded-proto"] === "https",
+    // secure: env.NODE_ENV === "production",
+    secure: req.secure || req.headers["x-forwarded-proto"] === "https",
     //* cookie can not be accessed or modified by the browser
     httpOnly: true,
   };
