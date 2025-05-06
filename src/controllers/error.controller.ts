@@ -22,6 +22,7 @@ const handleValidationErrorDB = (err: any) => {
 };
 
 const handleValidationErrorZOD = (err: any) => {
+  // TODO discriminate betwwen different errors code('invalid_type', 'too_small', 'too_big')
   const message = err.issues[0].message;
   return new AppError(message, 400);
 };
