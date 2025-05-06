@@ -1,7 +1,10 @@
 import express from "express";
-import { signup } from "../controllers/auth.controller";
+import { signup, login } from "../controllers/auth.controller";
 import { validateSchema } from "../middlewares/validation.middleware";
-import { UserCreateInputSchema } from "../schemas/user.schema";
+import {
+  UserCreateInputSchema,
+  UserTempLoginInput,
+} from "../schemas/user.schema";
 
 // Users layout Route
 const userRouter = express.Router();
@@ -9,7 +12,7 @@ const userRouter = express.Router();
 // * AUTH ROUTES (open for all)
 
 userRouter.post("/signup", validateSchema(UserCreateInputSchema), signup);
-// userRouter.post("/login", validateSchema(),login);
+userRouter.post("/login", validateSchema(UserTempLoginInput), login);
 // userRouter.get("/logout", logout);
 
 // userRouter.route("/").get(getUsers);

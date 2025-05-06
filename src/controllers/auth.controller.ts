@@ -4,6 +4,7 @@ import { env } from "../utils/env";
 import prisma from "../client";
 import { Request, Response } from "express";
 import { Prisma } from "../generated/client"; // Adjust the import path based on your project structure
+import AppError from "../utils/appError";
 
 // TODO  change this
 export type UserReturnType = Prisma.UserGetPayload<{
@@ -72,14 +73,17 @@ export const login = catchAsync(async (req, res, next) => {
   const { email, password } = req.body;
 
   // * 2) Check if user exists && password is correct
-  // const user = await User.findOne({
-  //   email,
-  // }).select("+password");
+  const user = await prisma.user.findUniqueOrThrow({
+    where: { email },
+    omit: {
+      password: false,
+    },
+  });
 
-  // if (!user || !(await user.correctPassword(password, user.password))) {
-  //   return next(new AppError("Incorrect email or password", 401));
-  // }
+  if (!(await prisma.user.validatePassword(password, user.password))) {
+    return next(new AppError("Incorrect email or password", 401));
+  }
 
   // * 3) Return new token to client
-  // createAndSendToken(user, 200, req, res);
+  createAndSendToken(user, 200, req, res);
 });

@@ -1,4 +1,4 @@
-import { Prisma } from "@prisma/client";
+import { Prisma } from "../generated/client";
 import bcrypt from "bcrypt";
 
 const hashPassword = async (password: string): Promise<string> => {
@@ -14,7 +14,6 @@ export const UserExtensions = Prisma.defineExtension({
         args.data.passwordConfirm = hashedPassword;
         return query(args);
       },
-
       async update({ args, query }) {
         // if password and password confirm exist ,iit can only be update password route
         if (args.data.password && args.data.passwordConfirm) {
@@ -41,6 +40,16 @@ export const UserExtensions = Prisma.defineExtension({
       },
       deleteMany({ args, query }) {
         return query(args);
+      },
+    },
+  },
+  model: {
+    user: {
+      validatePassword: async function (
+        candidatePassword: string,
+        userPassword: string
+      ): Promise<boolean> {
+        return await bcrypt.compare(candidatePassword, userPassword);
       },
     },
   },
