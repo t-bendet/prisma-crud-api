@@ -1,5 +1,31 @@
 import prisma from "../client";
 import catchAsync from "../utils/catchAsync";
+import { NextFunction, Request, Response } from "express";
+
+export const getMe = (req: Request, res: Response, next: NextFunction) => {
+  console.log(req.params);
+  // @ts-ignore
+  req.params.id = req.user.id;
+  next();
+};
+
+// Get a single user
+export const getUser = catchAsync(async (req, res, next) => {
+  const { id } = req.params;
+  const user = await prisma.user.findUniqueOrThrow({
+    where: {
+      id,
+    },
+  });
+
+  res.json({
+    status: true,
+    message: "User Successfully fetched",
+    data: user,
+  });
+});
+
+// exports.getUser = factory.getOne(User);
 
 // Creating a user
 export const createUser = catchAsync(async (req, res, next) => {
@@ -21,22 +47,6 @@ export const getUsers = catchAsync(async (req, res, next) => {
     status: true,
     message: "Users Successfully fetched",
     data: users,
-  });
-});
-
-// Get a single user
-export const getUser = catchAsync(async (req, res, next) => {
-  const { userid } = req.params;
-  const user = await prisma.user.findUniqueOrThrow({
-    where: {
-      id: userid,
-    },
-  });
-
-  res.json({
-    status: true,
-    message: "User Successfully fetched",
-    data: user,
   });
 });
 

@@ -1,13 +1,41 @@
 import { z } from "zod";
+import { Prisma } from "../generated/client";
 
-export const createUserSchema = z
+export const UserUpdateInput = z
   .object({
-    name: z.string().min(1),
-    email: z.string().email(),
-    phoneNumber: z.string().regex(/^\d+$/),
-    gender: z.enum(["male", "female", "others"]),
+    name: z.string().min(1).max(100).optional(),
+    email: z.string().email("Please provide a valid email!").optional(),
   })
-  .strict();
-//strict prevents the schema from validating payloads with properties not in the schema
+  .strict() satisfies z.Schema<Prisma.UserUncheckedUpdateInput>; // strict mode
 
-export const updateUserSchema = createUserSchema.partial(); //creates a partial schema from createUserSchema were all properties are optional
+export const UserCreateInputSchema = z
+  .object({
+    name: z.string({ message: "Name is required" }).min(1).max(100),
+    email: z
+      .string({ message: "email is required" })
+      .email("Please provide a valid email!"),
+    password: z
+      .string({ message: "Password is required" })
+      .min(8)
+      .max(20, "Password must be between 8 and 20 characters!"),
+    passwordConfirm: z
+      .string({ message: "PasswordConfirm is required" })
+      .min(8)
+      .max(20, "PasswordConfirm must be between 8 and 20 characters!"),
+  })
+  .strict() // strict mode
+  .refine((data) => data.password === data.passwordConfirm, {
+    message: "Password and PasswordConfirm must match!",
+  }) satisfies z.Schema<Prisma.UserUncheckedCreateInput>;
+
+export const UserTempLoginInput = z
+  .object({
+    email: z.string().email("Please provide a valid email!").optional(),
+    password: z
+      .string({ message: "Password is required" })
+      .min(8)
+      .max(20, "Password must be between 8 and 20 characters!"),
+  })
+  .strict() satisfies z.Schema<Prisma.UserUncheckedUpdateInput>; //
+
+export type UserCreateInput = z.infer<typeof UserCreateInputSchema>;

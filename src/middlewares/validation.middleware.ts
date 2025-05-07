@@ -1,14 +1,10 @@
-import { NextFunction, Request, Response } from "express";
 import { ZodSchema } from "zod";
+import catchAsync from "../utils/catchAsync";
 
-export const validateSchema =
-  (schema: ZodSchema) => (req: Request, res: Response, next: NextFunction) => {
-    const { success, error } = schema.safeParse(req.body);
+// * Middleware to validate request body against a Zod schema
 
-    if (!success) {
-      return next(
-        error.errors.map((t) => `${t.path[0] ?? ""}: ${t.message}`).join(", ")
-      );
-    }
+export const validateSchema = (schema: ZodSchema) =>
+  catchAsync(async (req, _res, next) => {
+    schema.parse(req.body);
     next();
-  };
+  });
