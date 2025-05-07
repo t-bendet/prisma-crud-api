@@ -24,7 +24,7 @@ userRouter.get("/logout", logout);
 // userRouter.post('/forgotPassword', forgotPassword);
 // userRouter.patch('/resetPassword/:token', resetPassword);
 
-// // * USER ROUTES (protected)
+// * USER ROUTES (protected)
 
 userRouter.use(authenticate);
 
@@ -34,7 +34,7 @@ userRouter.get("/me", getMe, getUser);
 // userRouter.patch('/updateMe', updateMe);
 // userRouter.delete('/deleteMe', deleteMe);
 
-// // * ADMIN ROUTES (restricted to admin roles)
+// * ADMIN ROUTES (restricted to admin roles)
 
 // userRouter.use(checkAuthorization('admin'));
 // userRouter.route('/').get(getAllUsers);
