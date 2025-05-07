@@ -1,10 +1,16 @@
 import express from "express";
-import { signup, login, logout } from "../controllers/auth.controller";
+import {
+  signup,
+  login,
+  logout,
+  authenticate,
+} from "../controllers/auth.controller";
 import { validateSchema } from "../middlewares/validation.middleware";
 import {
   UserCreateInputSchema,
   UserTempLoginInput,
 } from "../schemas/user.schema";
+import { getMe, getUser } from "../controllers/user.controller";
 
 // Users layout Route
 const userRouter = express.Router();
@@ -20,10 +26,11 @@ userRouter.get("/logout", logout);
 
 // // * USER ROUTES (protected)
 
-// userRouter.use(authenticate);
+userRouter.use(authenticate);
 
 // userRouter.patch('/updateMyPassword', updatePassword);
-// userRouter.get('/me', getMe);
+userRouter.get("/me", getMe, getUser);
+
 // userRouter.patch('/updateMe', updateMe);
 // userRouter.delete('/deleteMe', deleteMe);
 
