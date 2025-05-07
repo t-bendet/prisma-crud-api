@@ -1,3 +1,4 @@
+import prisma from "../client";
 import { Prisma } from "../generated/client";
 import bcrypt from "bcrypt";
 
@@ -52,5 +53,8 @@ export const UserExtensions = Prisma.defineExtension({
         return await bcrypt.compare(candidatePassword, userPassword);
       },
     },
+  },
+  result: {
+    user: {},
   },
 });
