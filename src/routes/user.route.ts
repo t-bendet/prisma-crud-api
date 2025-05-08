@@ -26,6 +26,7 @@ userRouter.get("/logout", logout);
 
 // * USER ROUTES (protected)
 
+// TODO validate user added to request object?
 userRouter.use(authenticate);
 
 // userRouter.patch('/updateMyPassword', updatePassword);
