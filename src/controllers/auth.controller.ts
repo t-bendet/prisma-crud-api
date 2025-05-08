@@ -97,7 +97,7 @@ export const authenticate = catchAsync(async (req, res, next) => {
   let token;
   if (authorization?.startsWith("Bearer")) {
     token = authorization.replace("Bearer ", "");
-  } else if (req.cookies.jwt) {
+  } else if (req.cookies?.jwt) {
     token = req.cookies.jwt;
   }
   if (!token) {
