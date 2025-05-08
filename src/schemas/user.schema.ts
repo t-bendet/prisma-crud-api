@@ -1,34 +1,28 @@
 import { z } from "zod";
 import { Prisma } from "../generated/client";
 
-export const UserUpdateInput = z
-  .object({
-    name: z.string().min(1).max(100).optional(),
-    email: z.string().email("Please provide a valid email!").optional(),
-  })
-  .strict() satisfies z.Schema<Prisma.UserUncheckedUpdateInput>; // strict mode
-
-export const UserCreateInputSchema = z
+// *  Sign Up
+export const UserCreateSchema = z
   .object({
     name: z.string({ message: "Name is required" }).min(1).max(100),
     email: z
       .string({ message: "email is required" })
       .email("Please provide a valid email!"),
-    password: z
-      .string({ message: "Password is required" })
-      .min(8)
-      .max(20, "Password must be between 8 and 20 characters!"),
+    password: z.string({ message: "Password is required" }).min(8).max(20),
     passwordConfirm: z
       .string({ message: "PasswordConfirm is required" })
       .min(8)
-      .max(20, "PasswordConfirm must be between 8 and 20 characters!"),
+      .max(20),
   })
   .strict() // strict mode
   .refine((data) => data.password === data.passwordConfirm, {
     message: "Password and PasswordConfirm must match!",
   }) satisfies z.Schema<Prisma.UserUncheckedCreateInput>;
 
-export const UserTempLoginInput = z
+// export type UserCreateInput = z.infer<typeof UserCreateSchema>;
+
+// *  Login
+export const UserLoginSchema = z
   .object({
     email: z.string().email("Please provide a valid email!").optional(),
     password: z
@@ -38,7 +32,13 @@ export const UserTempLoginInput = z
   })
   .strict() satisfies z.Schema<Prisma.UserUncheckedUpdateInput>; //
 
-export type UserCreateInput = z.infer<typeof UserCreateInputSchema>;
+//* UpdateMe
+export const UserUpdateMeSchema = z
+  .object({
+    name: z.string().min(1).max(100).optional(),
+    email: z.string().email("Please provide a valid email!").optional(),
+  })
+  .strict() satisfies z.Schema<Prisma.UserUncheckedUpdateInput>; // strict mode
 
 export type UserPublicInfo = Prisma.UserGetPayload<{
   omit: {
@@ -47,3 +47,6 @@ export type UserPublicInfo = Prisma.UserGetPayload<{
     active: true;
   };
 }>;
+
+// login
+// update password

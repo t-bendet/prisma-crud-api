@@ -1,7 +1,6 @@
 import bcrypt from "bcrypt";
 import { Prisma } from "../generated/client";
 
-// TODO : move this to a separate file?
 const hashPassword = async (password: string) => {
   return await bcrypt.hash(password, 12);
 };

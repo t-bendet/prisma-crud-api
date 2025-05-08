@@ -15,7 +15,6 @@ app.all(/.*/, (req, res, next) => {
 
 app.use(globalErrorHandler);
 
-// TODO rethink prisma methods compared to mongoose
 // TODO rethink user schema types and schemas
 // TODO apiFeatures
 // TODO error controller

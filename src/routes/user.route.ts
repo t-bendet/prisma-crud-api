@@ -4,13 +4,9 @@ import {
   login,
   logout,
   authenticate,
-  AuthorizedRequest,
 } from "../controllers/auth.controller";
 import { validateSchema } from "../middlewares/validation.middleware";
-import {
-  UserCreateInputSchema,
-  UserTempLoginInput,
-} from "../schemas/user.schema";
+import { UserCreateSchema, UserLoginSchema } from "../schemas/user.schema";
 import { getMe, getUser } from "../controllers/user.controller";
 
 // Users layout Route
@@ -18,8 +14,8 @@ const userRouter = express.Router();
 
 // * AUTH ROUTES (open for all)
 
-userRouter.post("/signup", validateSchema(UserCreateInputSchema), signup);
-userRouter.post("/login", validateSchema(UserTempLoginInput), login);
+userRouter.post("/signup", validateSchema(UserCreateSchema), signup);
+userRouter.post("/login", validateSchema(UserLoginSchema), login);
 userRouter.get("/logout", logout);
 
 // userRouter.post('/forgotPassword', forgotPassword);
