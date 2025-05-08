@@ -39,3 +39,11 @@ export const UserTempLoginInput = z
   .strict() satisfies z.Schema<Prisma.UserUncheckedUpdateInput>; //
 
 export type UserCreateInput = z.infer<typeof UserCreateInputSchema>;
+
+export type UserPublicInfo = Prisma.UserGetPayload<{
+  omit: {
+    password: true;
+    passwordConfirm: true;
+    active: true;
+  };
+}>;

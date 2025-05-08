@@ -1,15 +1,13 @@
-import jwt, { Secret, JwtPayload } from "jsonwebtoken";
+import { Request, Response } from "express";
+import jwt, { JwtPayload } from "jsonwebtoken";
+import prisma from "../client";
+import { UserPublicInfo } from "../schemas/user.schema";
+import AppError from "../utils/appError";
 import catchAsync from "../utils/catchAsync";
 import { env } from "../utils/env";
-import prisma from "../client";
-import { Request, Response } from "express";
-import { Prisma } from "../generated/client"; // Adjust the import path based on your project structure
-import AppError from "../utils/appError";
-export interface CustomRequest extends Request {
-  user: Omit<
-    Prisma.UserUncheckedCreateInput,
-    "password" | "passwordConfirm" | "active"
-  >;
+
+export interface AuthorizedRequest extends Request {
+  user: UserPublicInfo;
 }
 
 const signToken = (id: string) => {
@@ -33,13 +31,7 @@ function isPasswordChangedAfter(JWTTimestamp: number, passwordChangedAt: Date) {
 }
 
 export const createAndSendToken = (
-  user: Prisma.UserGetPayload<{
-    omit: {
-      password: true;
-      passwordConfirm: true;
-      active: true;
-    };
-  }>,
+  user: UserPublicInfo,
   statusCode: number,
   req: Request,
   res: Response
@@ -157,7 +149,7 @@ export const authenticate = catchAsync(async (req, res, next) => {
     );
   }
 
-  (req as CustomRequest).user = currentUser;
+  (req as AuthorizedRequest).user = currentUser;
 
   return next();
 });
