@@ -16,20 +16,6 @@ const signToken = (id: string) => {
   });
 };
 
-function isPasswordChangedAfter(JWTTimestamp: number, passwordChangedAt: Date) {
-  if (passwordChangedAt) {
-    const changedTimestamp = parseInt(
-      (passwordChangedAt.getTime() / 1000).toString(),
-      10
-    );
-
-    return JWTTimestamp < changedTimestamp;
-  }
-
-  // False means NOT changed
-  return false;
-}
-
 export const createAndSendToken = (
   user: UserPublicInfo,
   statusCode: number,
@@ -135,7 +121,7 @@ export const authenticate = catchAsync(async (req, res, next) => {
     );
   }
   // //* 4) check if user changed password after the token was issued
-  const hasPasswordChanged = isPasswordChangedAfter(
+  const hasPasswordChanged = await prisma.user.isPasswordChangedAfter(
     decoded.iat!,
     currentUser.passwordChangedAt
   );
