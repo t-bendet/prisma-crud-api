@@ -124,7 +124,6 @@ export const authenticate = catchAsync(async (req, res, next) => {
   const decoded = jwt.verify(token, env.JWT_SECRET) as JwtPayload;
   // //* 3) check if user still exists
   const currentUser = await prisma.user.findUnique({
-    // @ts-ignore
     where: { id: decoded.id },
   });
   if (!currentUser) {
