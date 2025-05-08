@@ -4,11 +4,15 @@ import {
   login,
   logout,
   authenticate,
+  updatePassword,
+  updateMe,
 } from "../controllers/auth.controller";
 import { validateSchema } from "../middlewares/validation.middleware";
 import {
-  UserCreateInputSchema,
-  UserTempLoginInput,
+  UserCreateSchema,
+  UserLoginSchema,
+  UserUpdatePasswordSchema,
+  UserUpdateMeSchema,
 } from "../schemas/user.schema";
 import { getMe, getUser } from "../controllers/user.controller";
 
@@ -17,8 +21,8 @@ const userRouter = express.Router();
 
 // * AUTH ROUTES (open for all)
 
-userRouter.post("/signup", validateSchema(UserCreateInputSchema), signup);
-userRouter.post("/login", validateSchema(UserTempLoginInput), login);
+userRouter.post("/signup", validateSchema(UserCreateSchema), signup);
+userRouter.post("/login", validateSchema(UserLoginSchema), login);
 userRouter.get("/logout", logout);
 
 // userRouter.post('/forgotPassword', forgotPassword);
@@ -26,12 +30,21 @@ userRouter.get("/logout", logout);
 
 // * USER ROUTES (protected)
 
-userRouter.use(authenticate);
+// TODO validate user added to request object?
+userRouter.use(authenticate, async (req, _res, next) => {
+  // console.log("User authenticated");
+  // console.log((req as AuthorizedRequest).user);
+  next();
+});
 
-// userRouter.patch('/updateMyPassword', updatePassword);
+userRouter.patch(
+  "/updateMyPassword",
+  validateSchema(UserUpdatePasswordSchema),
+  updatePassword
+);
 userRouter.get("/me", getMe, getUser);
 
-// userRouter.patch('/updateMe', updateMe);
+userRouter.patch("/updateMe", validateSchema(UserUpdateMeSchema), updateMe);
 // userRouter.delete('/deleteMe', deleteMe);
 
 // * ADMIN ROUTES (restricted to admin roles)

@@ -1,15 +1,13 @@
-import jwt, { Secret, JwtPayload } from "jsonwebtoken";
+import { Request, Response } from "express";
+import jwt, { JwtPayload } from "jsonwebtoken";
+import prisma from "../client";
+import { UserPublicInfo } from "../schemas/user.schema";
+import AppError from "../utils/appError";
 import catchAsync from "../utils/catchAsync";
 import { env } from "../utils/env";
-import prisma from "../client";
-import { Request, Response } from "express";
-import { Prisma } from "../generated/client"; // Adjust the import path based on your project structure
-import AppError from "../utils/appError";
-export interface CustomRequest extends Request {
-  user: Omit<
-    Prisma.UserUncheckedCreateInput,
-    "password" | "passwordConfirm" | "active"
-  >;
+
+export interface AuthorizedRequest extends Request {
+  user: UserPublicInfo;
 }
 
 const signToken = (id: string) => {
@@ -18,28 +16,8 @@ const signToken = (id: string) => {
   });
 };
 
-function isPasswordChangedAfter(JWTTimestamp: number, passwordChangedAt: Date) {
-  if (passwordChangedAt) {
-    const changedTimestamp = parseInt(
-      (passwordChangedAt.getTime() / 1000).toString(),
-      10
-    );
-
-    return JWTTimestamp < changedTimestamp;
-  }
-
-  // False means NOT changed
-  return false;
-}
-
 export const createAndSendToken = (
-  user: Prisma.UserGetPayload<{
-    omit: {
-      password: true;
-      passwordConfirm: true;
-      active: true;
-    };
-  }>,
+  user: UserPublicInfo,
   statusCode: number,
   req: Request,
   res: Response
@@ -119,7 +97,7 @@ export const authenticate = catchAsync(async (req, res, next) => {
   let token;
   if (authorization?.startsWith("Bearer")) {
     token = authorization.replace("Bearer ", "");
-  } else if (req.cookies.jwt) {
+  } else if (req.cookies?.jwt) {
     token = req.cookies.jwt;
   }
   if (!token) {
@@ -132,7 +110,6 @@ export const authenticate = catchAsync(async (req, res, next) => {
   const decoded = jwt.verify(token, env.JWT_SECRET) as JwtPayload;
   // //* 3) check if user still exists
   const currentUser = await prisma.user.findUnique({
-    // @ts-ignore
     where: { id: decoded.id },
   });
   if (!currentUser) {
@@ -144,7 +121,7 @@ export const authenticate = catchAsync(async (req, res, next) => {
     );
   }
   // //* 4) check if user changed password after the token was issued
-  const hasPasswordChanged = isPasswordChangedAfter(
+  const hasPasswordChanged = await prisma.user.isPasswordChangedAfter(
     decoded.iat!,
     currentUser.passwordChangedAt
   );
@@ -157,7 +134,56 @@ export const authenticate = catchAsync(async (req, res, next) => {
     );
   }
 
-  (req as CustomRequest).user = currentUser;
+  (req as AuthorizedRequest).user = currentUser;
 
   return next();
+});
+
+export const updatePassword = catchAsync(async (req, res, next) => {
+  // 1) Get user from collection
+  const user = await prisma.user.findUniqueOrThrow({
+    where: { id: (req as AuthorizedRequest).user.id },
+    omit: {
+      password: false,
+      passwordConfirm: false,
+    },
+  });
+
+  // 2) Check if POSTed current password is correct
+  if (
+    !(await prisma.user.validatePassword(
+      req.body.passwordCurrent,
+      user.password
+    ))
+  ) {
+    return next(new AppError("Your current password is wrong.", 401));
+  }
+
+  // 3) If so, update password
+
+  await prisma.user.update({
+    where: { id: user.id },
+    data: {
+      password: req.body.password,
+      passwordConfirm: req.body.passwordConfirm,
+    },
+  });
+  // 4) Log user in, send JWT
+  createAndSendToken(user, 200, req, res);
+});
+
+export const updateMe = catchAsync(async (req, res, next) => {
+  const updatedUser = await prisma.user.update({
+    where: { id: (req as AuthorizedRequest).user.id },
+    data: {
+      ...req.body,
+    },
+  });
+
+  res.status(200).json({
+    status: "success",
+    data: {
+      user: updatedUser,
+    },
+  });
 });

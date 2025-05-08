@@ -1,8 +1,7 @@
-import prisma from "../client";
-import { Prisma } from "../generated/client";
 import bcrypt from "bcrypt";
+import { Prisma } from "../generated/client";
 
-const hashPassword = async (password: string): Promise<string> => {
+const hashPassword = async (password: string) => {
   return await bcrypt.hash(password, 12);
 };
 
@@ -49,8 +48,24 @@ export const UserExtensions = Prisma.defineExtension({
       validatePassword: async function (
         candidatePassword: string,
         userPassword: string
-      ): Promise<boolean> {
+      ) {
         return await bcrypt.compare(candidatePassword, userPassword);
+      },
+      isPasswordChangedAfter: async function (
+        JWTTimestamp: number,
+        passwordChangedAt: Date
+      ) {
+        if (passwordChangedAt) {
+          const changedTimestamp = parseInt(
+            (passwordChangedAt.getTime() / 1000).toString(),
+            10
+          );
+
+          return JWTTimestamp < changedTimestamp;
+        }
+
+        // False means NOT changed
+        return false;
       },
     },
   },
