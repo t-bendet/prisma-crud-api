@@ -4,6 +4,7 @@ import {
   login,
   logout,
   authenticate,
+  AuthorizedRequest,
 } from "../controllers/auth.controller";
 import { validateSchema } from "../middlewares/validation.middleware";
 import {
@@ -27,7 +28,11 @@ userRouter.get("/logout", logout);
 // * USER ROUTES (protected)
 
 // TODO validate user added to request object?
-userRouter.use(authenticate);
+userRouter.use(authenticate, async (req, _res, next) => {
+  // console.log("User authenticated");
+  // console.log((req as AuthorizedRequest).user);
+  next();
+});
 
 // userRouter.patch('/updateMyPassword', updatePassword);
 userRouter.get("/me", getMe, getUser);
