@@ -15,6 +15,7 @@ app.all(/.*/, (req, res, next) => {
 
 app.use(globalErrorHandler);
 
+// TODO Omi password is broken! fix!
 // TODO rethink user schema types and schemas
 // TODO apiFeatures
 // TODO error controller

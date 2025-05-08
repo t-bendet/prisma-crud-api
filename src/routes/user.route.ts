@@ -4,9 +4,14 @@ import {
   login,
   logout,
   authenticate,
+  updatePassword,
 } from "../controllers/auth.controller";
 import { validateSchema } from "../middlewares/validation.middleware";
-import { UserCreateSchema, UserLoginSchema } from "../schemas/user.schema";
+import {
+  UserCreateSchema,
+  UserLoginSchema,
+  UserUpdatePasswordSchema,
+} from "../schemas/user.schema";
 import { getMe, getUser } from "../controllers/user.controller";
 
 // Users layout Route
@@ -30,7 +35,11 @@ userRouter.use(authenticate, async (req, _res, next) => {
   next();
 });
 
-// userRouter.patch('/updateMyPassword', updatePassword);
+userRouter.patch(
+  "/updateMyPassword",
+  validateSchema(UserUpdatePasswordSchema),
+  updatePassword
+);
 userRouter.get("/me", getMe, getUser);
 
 // userRouter.patch('/updateMe', updateMe);

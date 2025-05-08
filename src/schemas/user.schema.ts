@@ -50,7 +50,10 @@ export const UserUpdatePasswordSchema = z
     password: Password,
     passwordConfirm: PasswordConfirm,
   })
-  .strict() satisfies z.Schema<Prisma.UserUncheckedUpdateInput>; // strict mode
+  .strict()
+  .refine((data) => data.password === data.passwordConfirm, {
+    message: "Password and PasswordConfirm must match!",
+  }) satisfies z.Schema<Prisma.UserUncheckedUpdateInput>; // strict mode
 
 export type UserPublicInfo = Prisma.UserGetPayload<{
   omit: {

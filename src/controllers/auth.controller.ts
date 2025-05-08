@@ -138,3 +138,36 @@ export const authenticate = catchAsync(async (req, res, next) => {
 
   return next();
 });
+
+export const updatePassword = catchAsync(async (req, res, next) => {
+  // 1) Get user from collection
+  const user = await prisma.user.findUniqueOrThrow({
+    where: { id: (req as AuthorizedRequest).user.id },
+    omit: {
+      password: false,
+      passwordConfirm: false,
+    },
+  });
+
+  // 2) Check if POSTed current password is correct
+  if (
+    !(await prisma.user.validatePassword(
+      req.body.passwordCurrent,
+      user.password
+    ))
+  ) {
+    return next(new AppError("Your current password is wrong.", 401));
+  }
+
+  // 3) If so, update password
+
+  await prisma.user.update({
+    where: { id: user.id },
+    data: {
+      password: req.body.password,
+      passwordConfirm: req.body.passwordConfirm,
+    },
+  });
+  // 4) Log user in, send JWT
+  createAndSendToken(user, 200, req, res);
+});
