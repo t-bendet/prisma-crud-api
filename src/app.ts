@@ -17,6 +17,7 @@ app.use(globalErrorHandler);
 
 // TODO apiFeatures
 // TODO error controller
+// TODO rethink prisma methods compared to mongoose
 // TODO handle factory adaption to prisma
 // TODO  error controller edge cases(unhandledRejection)
 // TODO customizing-errors-with-zod error map
