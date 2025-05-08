@@ -1,18 +1,24 @@
 import { z } from "zod";
 import { Prisma } from "../generated/client";
 
+const Name = z.string({ message: "Name is required" }).min(1).max(100);
+const Email = z
+  .string({ message: "Email is required" })
+  .email("Please provide a valid email!");
+const Password = z.string({ message: "Password is required" }).min(8).max(20);
+const PasswordConfirm = z
+  .string({ message: "Password is required" })
+  .min(8)
+  .max(20);
+
 // *  Sign Up
+
 export const UserCreateSchema = z
   .object({
-    name: z.string({ message: "Name is required" }).min(1).max(100),
-    email: z
-      .string({ message: "email is required" })
-      .email("Please provide a valid email!"),
-    password: z.string({ message: "Password is required" }).min(8).max(20),
-    passwordConfirm: z
-      .string({ message: "PasswordConfirm is required" })
-      .min(8)
-      .max(20),
+    name: Name,
+    email: Email,
+    password: Password,
+    passwordConfirm: PasswordConfirm,
   })
   .strict() // strict mode
   .refine((data) => data.password === data.passwordConfirm, {
@@ -22,21 +28,27 @@ export const UserCreateSchema = z
 // export type UserCreateInput = z.infer<typeof UserCreateSchema>;
 
 // *  Login
+
 export const UserLoginSchema = z
   .object({
-    email: z.string().email("Please provide a valid email!").optional(),
-    password: z
-      .string({ message: "Password is required" })
-      .min(8)
-      .max(20, "Password must be between 8 and 20 characters!"),
+    email: Email,
+    password: Password,
   })
   .strict() satisfies z.Schema<Prisma.UserUncheckedUpdateInput>; //
 
 //* UpdateMe
 export const UserUpdateMeSchema = z
   .object({
-    name: z.string().min(1).max(100).optional(),
-    email: z.string().email("Please provide a valid email!").optional(),
+    name: Name.optional(),
+    email: Email.optional(),
+  })
+  .strict() satisfies z.Schema<Prisma.UserUncheckedUpdateInput>;
+
+export const UserUpdatePasswordSchema = z
+  .object({
+    passwordCurrent: Password,
+    password: Password,
+    passwordConfirm: PasswordConfirm,
   })
   .strict() satisfies z.Schema<Prisma.UserUncheckedUpdateInput>; // strict mode
 
@@ -47,6 +59,3 @@ export type UserPublicInfo = Prisma.UserGetPayload<{
     active: true;
   };
 }>;
-
-// login
-// update password
