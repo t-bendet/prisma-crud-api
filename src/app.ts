@@ -16,6 +16,7 @@ app.all(/.*/, (req, res, next) => {
 app.use(globalErrorHandler);
 
 // TODO apiFeatures
+// TODO error controller
 // TODO handle factory adaption to prisma
 // TODO  error controller edge cases(unhandledRejection)
 // TODO customizing-errors-with-zod error map
