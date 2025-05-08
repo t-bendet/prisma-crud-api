@@ -25,5 +25,6 @@ app.use(globalErrorHandler);
 // TODO add validations in zod for schema
 // TODO npx prisma db push as part of the build process
 // TODO npx prisma db seed as part of the build process
+// TODO   this.find({ active: { $ne: false } });
 
 export default app;
