@@ -1,5 +1,5 @@
 import express from "express";
-import globalErrorHandler from "./controllers/error.controller";
+import globalErrorHandler from "./middlewares/error.middleware";
 import indexRoute from "./routes";
 import AppError from "./utils/appError";
 
