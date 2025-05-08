@@ -171,3 +171,19 @@ export const updatePassword = catchAsync(async (req, res, next) => {
   // 4) Log user in, send JWT
   createAndSendToken(user, 200, req, res);
 });
+
+export const updateMe = catchAsync(async (req, res, next) => {
+  const updatedUser = await prisma.user.update({
+    where: { id: (req as AuthorizedRequest).user.id },
+    data: {
+      ...req.body,
+    },
+  });
+
+  res.status(200).json({
+    status: "success",
+    data: {
+      user: updatedUser,
+    },
+  });
+});

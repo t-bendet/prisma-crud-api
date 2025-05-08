@@ -5,12 +5,14 @@ import {
   logout,
   authenticate,
   updatePassword,
+  updateMe,
 } from "../controllers/auth.controller";
 import { validateSchema } from "../middlewares/validation.middleware";
 import {
   UserCreateSchema,
   UserLoginSchema,
   UserUpdatePasswordSchema,
+  UserUpdateMeSchema,
 } from "../schemas/user.schema";
 import { getMe, getUser } from "../controllers/user.controller";
 
@@ -42,7 +44,7 @@ userRouter.patch(
 );
 userRouter.get("/me", getMe, getUser);
 
-// userRouter.patch('/updateMe', updateMe);
+userRouter.patch("/updateMe", validateSchema(UserUpdateMeSchema), updateMe);
 // userRouter.delete('/deleteMe', deleteMe);
 
 // * ADMIN ROUTES (restricted to admin roles)
