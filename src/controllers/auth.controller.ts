@@ -68,6 +68,7 @@ export const login = catchAsync(async (req, res, next) => {
   const { email, password } = req.body;
 
   // * 2) Check if user exists && password is correct
+  // TODO handle throw
   const user = await prisma.user.findUniqueOrThrow({
     where: { email },
     omit: {
