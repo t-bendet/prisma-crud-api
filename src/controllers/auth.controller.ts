@@ -80,7 +80,7 @@ export const login = catchAsync(async (req, res, next) => {
   createAndSendToken(user, 200, req, res);
 });
 
-export const logout = (req: Request, res: Response) => {
+export const logout = (_req: Request, res: Response) => {
   res.cookie("jwt", "loggedout", {
     expires: new Date(Date.now() + 10 * 1000),
     httpOnly: true,
@@ -88,7 +88,7 @@ export const logout = (req: Request, res: Response) => {
   res.status(200).json({ statusText: "success" });
 };
 
-export const authenticate = catchAsync(async (req, res, next) => {
+export const authenticate = catchAsync(async (req, _res, next) => {
   // * 1) Getting token and check if it's there
   const { authorization } = req.headers;
   let token;
@@ -169,7 +169,7 @@ export const updatePassword = catchAsync(async (req, res, next) => {
   createAndSendToken(user, 200, req, res);
 });
 
-export const updateMe = catchAsync(async (req, res, next) => {
+export const updateMe = catchAsync(async (req, res, _next) => {
   const updatedUser = await prisma.user.update({
     where: { id: req.user?.id },
     data: {

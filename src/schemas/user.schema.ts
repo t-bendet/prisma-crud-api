@@ -62,3 +62,17 @@ export type UserPublicInfo = Prisma.UserGetPayload<{
     active: true;
   };
 }>;
+
+export const UserPublicInfoSchema = z
+  .object({
+    id: z.string(),
+    name: Name,
+    role: z.enum(["ADMIN", "USER"]),
+    email: Email,
+    passwordChangedAt: z.date(),
+    passwordResetToken: z.string().nullable().optional(),
+    passwordResetExpires: z.date().nullable().optional(),
+    emailVerified: z.boolean(),
+    createdAt: z.date(),
+  })
+  .strict() satisfies z.Schema<Prisma.UserUncheckedUpdateInput>;

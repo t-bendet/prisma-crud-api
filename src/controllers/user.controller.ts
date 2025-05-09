@@ -2,13 +2,13 @@ import prisma from "../client";
 import catchAsync from "../utils/catchAsync";
 import { NextFunction, Request, Response } from "express";
 
-export const getMe = (req: Request, res: Response, next: NextFunction) => {
+export const getMe = (req: Request, _res: Response, next: NextFunction) => {
   req.params.id = req.user?.id!;
   next();
 };
 
 // Get a single user
-export const getUser = catchAsync(async (req, res, next) => {
+export const getUser = catchAsync(async (req, res, _next) => {
   const { id } = req.params;
   const user = await prisma.user.findUniqueOrThrow({
     where: {
