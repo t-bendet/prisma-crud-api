@@ -6,10 +6,6 @@ import AppError from "../utils/appError";
 import catchAsync from "../utils/catchAsync";
 import { env } from "../utils/env";
 
-export interface AuthorizedRequest extends Request {
-  user: UserPublicInfo;
-}
-
 const signToken = (id: string) => {
   return jwt.sign({ id }, env.JWT_SECRET, {
     expiresIn: env.JWT_EXPIRES_IN,
@@ -135,7 +131,7 @@ export const authenticate = catchAsync(async (req, res, next) => {
     );
   }
 
-  (req as AuthorizedRequest).user = currentUser;
+  req.user = currentUser;
 
   return next();
 });
@@ -143,7 +139,7 @@ export const authenticate = catchAsync(async (req, res, next) => {
 export const updatePassword = catchAsync(async (req, res, next) => {
   // 1) Get user from collection
   const user = await prisma.user.findUniqueOrThrow({
-    where: { id: (req as AuthorizedRequest).user.id },
+    where: { id: req.user?.id },
     omit: {
       password: false,
       passwordConfirm: false,
@@ -175,7 +171,7 @@ export const updatePassword = catchAsync(async (req, res, next) => {
 
 export const updateMe = catchAsync(async (req, res, next) => {
   const updatedUser = await prisma.user.update({
-    where: { id: (req as AuthorizedRequest).user.id },
+    where: { id: req.user?.id },
     data: {
       ...req.body,
     },

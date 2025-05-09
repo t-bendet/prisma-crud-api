@@ -1,10 +1,9 @@
 import prisma from "../client";
 import catchAsync from "../utils/catchAsync";
 import { NextFunction, Request, Response } from "express";
-import { AuthorizedRequest } from "./auth.controller";
 
 export const getMe = (req: Request, res: Response, next: NextFunction) => {
-  req.params.id = (req as AuthorizedRequest).user.id;
+  req.params.id = req.user?.id!;
   next();
 };
 

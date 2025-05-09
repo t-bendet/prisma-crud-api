@@ -2,6 +2,15 @@ import express from "express";
 import globalErrorHandler from "./middlewares/error.middleware";
 import indexRoute from "./routes";
 import AppError from "./utils/appError";
+import { UserPublicInfo } from "./schemas/user.schema";
+
+declare global {
+  namespace Express {
+    export interface Request {
+      user?: UserPublicInfo;
+    }
+  }
+}
 
 const app = express();
 
