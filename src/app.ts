@@ -24,13 +24,13 @@ app.all(/.*/, (req, res, next) => {
 
 app.use(globalErrorHandler);
 
-// TODO apiFeatures
+// TODO apiFeatures - WIP
+
 // TODO error controller
+// TODO   this.find({ active: { $ne: false } });
 // TODO handle factory adaption to prisma
 // TODO  error controller edge cases(unhandledRejection)
-// TODO customizing-errors-with-zod error map
 // TODO npx prisma db push as part of the build process
 // TODO npx prisma db seed as part of the build process
-// TODO   this.find({ active: { $ne: false } });
 
 export default app;
