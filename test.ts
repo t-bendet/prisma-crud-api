@@ -86,3 +86,31 @@ export const userService = {
 };
 
 export default prisma;
+
+// export const login = catchAsync(async (req, res, next) => {
+//   const { email, password } = req.body;
+
+//   // * 2) Check if user exists && password is correct
+//   const user = await prisma.user.validatePasswordTest(password, email);
+
+//   // * 3) Return new token to client
+//   createAndSendToken(user, 200, req, res);
+// });
+
+// async validatePasswordTest(candidatePassword: string, email: string) {
+//   const user = await prisma.user.findUnique({
+//     where: { email },
+//     omit: {
+//       password: false,
+//     },
+//   });
+
+//   if (
+//     !user ||
+//     !(await bcrypt.compare(candidatePassword, user.password))
+//   ) {
+//     throw new AppError("Incorrect email or password", 401);
+//   }
+//   const { password, ...userPublicInfo } = user;
+//   return userPublicInfo;
+// },

@@ -76,8 +76,9 @@ export const login = catchAsync(async (req, res, next) => {
     return next(new AppError("Incorrect email or password", 401));
   }
 
+  const { password: _, ...userWithoutPassword } = user;
   // * 3) Return new token to client
-  createAndSendToken(user, 200, req, res);
+  createAndSendToken(userWithoutPassword, 200, req, res);
 });
 
 export const logout = (_req: Request, res: Response) => {
@@ -142,7 +143,6 @@ export const updatePassword = catchAsync(async (req, res, next) => {
     where: { id: req.user?.id },
     omit: {
       password: false,
-      passwordConfirm: false,
     },
   });
 
@@ -158,7 +158,7 @@ export const updatePassword = catchAsync(async (req, res, next) => {
 
   // 3) If so, update password
 
-  await prisma.user.update({
+  const updatedUser = await prisma.user.update({
     where: { id: user.id },
     data: {
       password: req.body.password,
@@ -166,7 +166,7 @@ export const updatePassword = catchAsync(async (req, res, next) => {
     },
   });
   // 4) Log user in, send JWT
-  createAndSendToken(user, 200, req, res);
+  createAndSendToken(updatedUser, 200, req, res);
 });
 
 export const updateMe = catchAsync(async (req, res, _next) => {

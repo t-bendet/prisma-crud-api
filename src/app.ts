@@ -24,7 +24,6 @@ app.all(/.*/, (req, res, next) => {
 
 app.use(globalErrorHandler);
 
-// TODO Omi password is broken! fix!
 // TODO apiFeatures
 // TODO error controller
 // TODO handle factory adaption to prisma
