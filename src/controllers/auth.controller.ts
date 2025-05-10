@@ -1,14 +1,10 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import prisma from "../client";
 import { UserPublicInfo } from "../schemas/user.schema";
 import AppError from "../utils/appError";
 import catchAsync from "../utils/catchAsync";
 import { env } from "../utils/env";
-
-export interface AuthorizedRequest extends Request {
-  user: UserPublicInfo;
-}
 
 const signToken = (id: string) => {
   return jwt.sign({ id }, env.JWT_SECRET, {
@@ -68,6 +64,7 @@ export const login = catchAsync(async (req, res, next) => {
   const { email, password } = req.body;
 
   // * 2) Check if user exists && password is correct
+  // TODO handle throw
   const user = await prisma.user.findUniqueOrThrow({
     where: { email },
     omit: {
@@ -79,11 +76,12 @@ export const login = catchAsync(async (req, res, next) => {
     return next(new AppError("Incorrect email or password", 401));
   }
 
+  const { password: _, ...userWithoutPassword } = user;
   // * 3) Return new token to client
-  createAndSendToken(user, 200, req, res);
+  createAndSendToken(userWithoutPassword, 200, req, res);
 });
 
-export const logout = (req: Request, res: Response) => {
+export const logout = (_req: Request, res: Response) => {
   res.cookie("jwt", "loggedout", {
     expires: new Date(Date.now() + 10 * 1000),
     httpOnly: true,
@@ -91,7 +89,7 @@ export const logout = (req: Request, res: Response) => {
   res.status(200).json({ statusText: "success" });
 };
 
-export const authenticate = catchAsync(async (req, res, next) => {
+export const authenticate = catchAsync(async (req, _res, next) => {
   // * 1) Getting token and check if it's there
   const { authorization } = req.headers;
   let token;
@@ -134,7 +132,7 @@ export const authenticate = catchAsync(async (req, res, next) => {
     );
   }
 
-  (req as AuthorizedRequest).user = currentUser;
+  req.user = currentUser;
 
   return next();
 });
@@ -142,10 +140,9 @@ export const authenticate = catchAsync(async (req, res, next) => {
 export const updatePassword = catchAsync(async (req, res, next) => {
   // 1) Get user from collection
   const user = await prisma.user.findUniqueOrThrow({
-    where: { id: (req as AuthorizedRequest).user.id },
+    where: { id: req.user?.id },
     omit: {
       password: false,
-      passwordConfirm: false,
     },
   });
 
@@ -161,7 +158,7 @@ export const updatePassword = catchAsync(async (req, res, next) => {
 
   // 3) If so, update password
 
-  await prisma.user.update({
+  const updatedUser = await prisma.user.update({
     where: { id: user.id },
     data: {
       password: req.body.password,
@@ -169,12 +166,12 @@ export const updatePassword = catchAsync(async (req, res, next) => {
     },
   });
   // 4) Log user in, send JWT
-  createAndSendToken(user, 200, req, res);
+  createAndSendToken(updatedUser, 200, req, res);
 });
 
-export const updateMe = catchAsync(async (req, res, next) => {
+export const updateMe = catchAsync(async (req, res, _next) => {
   const updatedUser = await prisma.user.update({
-    where: { id: (req as AuthorizedRequest).user.id },
+    where: { id: req.user?.id },
     data: {
       ...req.body,
     },
@@ -187,3 +184,16 @@ export const updateMe = catchAsync(async (req, res, next) => {
     },
   });
 });
+
+export const checkAuthorization = (...roles: UserPublicInfo["role"][]) => {
+  return (req: Request, res: Response, next: NextFunction) => {
+    // roles ['admin', 'lead-guide']. role='user'
+    if (!roles.includes(req.user!.role)) {
+      return next(
+        new AppError("You do not have permission to perform this action", 403)
+      );
+    }
+
+    next();
+  };
+};

@@ -41,6 +41,64 @@ export const UserExtensions = Prisma.defineExtension({
       deleteMany({ args, query }) {
         return query(args);
       },
+      findUnique({ args, query }) {
+        args = {
+          ...args,
+          where: {
+            ...args.where,
+            active: { not: false },
+          },
+        };
+        return query(args);
+      },
+      findFirst({ args, query }) {
+        args = {
+          ...args,
+          where: {
+            ...args.where,
+            active: { not: false },
+          },
+        };
+
+        return query(args);
+      },
+      findMany({ args, query }) {
+        args = {
+          ...args,
+          where: {
+            ...args.where,
+            active: { not: false },
+          },
+        };
+        return query(args);
+      },
+      findFirstOrThrow({ args, query }) {
+        args = {
+          ...args,
+          where: {
+            ...args.where,
+            active: { not: false },
+          },
+        };
+        // args.where = UserWhereUniqueInput.parse(args.where);
+        return query(args);
+      },
+      findRaw({ args, query }) {
+        // args.where = UserWhereUniqueInput.parse(args.where);
+        return query(args);
+      },
+      findUniqueOrThrow({ args, query }) {
+        args = {
+          ...args,
+          where: {
+            ...args.where,
+            active: { not: false },
+          },
+        };
+
+        // args.where = UserWhereUniqueInput.parse(args.where);
+        return query(args);
+      },
     },
   },
   model: {

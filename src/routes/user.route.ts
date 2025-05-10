@@ -6,6 +6,7 @@ import {
   authenticate,
   updatePassword,
   updateMe,
+  checkAuthorization,
 } from "../controllers/auth.controller";
 import { validateSchema } from "../middlewares/validation.middleware";
 import {
@@ -14,7 +15,14 @@ import {
   UserUpdatePasswordSchema,
   UserUpdateMeSchema,
 } from "../schemas/user.schema";
-import { getMe, getUser } from "../controllers/user.controller";
+import {
+  getMe,
+  getUser,
+  deleteMe,
+  getAllUsers,
+  updateUser,
+  deleteUser,
+} from "../controllers/user.controller";
 
 // Users layout Route
 const userRouter = express.Router();
@@ -25,6 +33,7 @@ userRouter.post("/signup", validateSchema(UserCreateSchema), signup);
 userRouter.post("/login", validateSchema(UserLoginSchema), login);
 userRouter.get("/logout", logout);
 
+// TODO implement forgot password and reset password
 // userRouter.post('/forgotPassword', forgotPassword);
 // userRouter.patch('/resetPassword/:token', resetPassword);
 
@@ -45,12 +54,12 @@ userRouter.patch(
 userRouter.get("/me", getMe, getUser);
 
 userRouter.patch("/updateMe", validateSchema(UserUpdateMeSchema), updateMe);
-// userRouter.delete('/deleteMe', deleteMe);
+userRouter.delete("/deleteMe", deleteMe);
 
 // * ADMIN ROUTES (restricted to admin roles)
 
-// userRouter.use(checkAuthorization('admin'));
-// userRouter.route('/').get(getAllUsers);
-// userRouter.route('/:id').get(getUser).patch(updateUser).delete(deleteUser);
+userRouter.use(checkAuthorization("ADMIN"));
+userRouter.route("/").get(getAllUsers);
+userRouter.route("/:id").get(getUser).patch(updateUser).delete(deleteUser);
 
 export default userRouter;
