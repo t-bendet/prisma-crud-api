@@ -57,6 +57,6 @@ userRouter.delete("/deleteMe", deleteMe);
 
 userRouter.use(checkAuthorization("ADMIN"));
 userRouter.route("/").get(getAllUsers);
-// userRouter.route('/:id').get(getUser).patch(updateUser).delete(deleteUser);
-
+userRouter.route("/:id").get(getUser);
+// .patch(updateUser).delete(deleteUser);
 export default userRouter;
