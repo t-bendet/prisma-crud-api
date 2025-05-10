@@ -23,6 +23,21 @@ export const getUser = catchAsync(async (req, res, _next) => {
   });
 });
 
+export const deleteMe = catchAsync(async (req, res, next) => {
+  await prisma.user.update({
+    where: {
+      id: req.user?.id,
+    },
+    data: {
+      active: false,
+    },
+  });
+  res.status(204).json({
+    status: "success",
+    data: null,
+  });
+});
+
 // // Creating a user
 // export const createUser = catchAsync(async (req, res, next) => {
 //   const user = await prisma.user.create({

@@ -14,7 +14,7 @@ import {
   UserUpdatePasswordSchema,
   UserUpdateMeSchema,
 } from "../schemas/user.schema";
-import { getMe, getUser } from "../controllers/user.controller";
+import { getMe, getUser, deleteMe } from "../controllers/user.controller";
 
 // Users layout Route
 const userRouter = express.Router();
@@ -45,7 +45,7 @@ userRouter.patch(
 userRouter.get("/me", getMe, getUser);
 
 userRouter.patch("/updateMe", validateSchema(UserUpdateMeSchema), updateMe);
-// userRouter.delete('/deleteMe', deleteMe);
+userRouter.delete("/deleteMe", deleteMe);
 
 // * ADMIN ROUTES (restricted to admin roles)
 
