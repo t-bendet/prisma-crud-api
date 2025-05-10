@@ -50,16 +50,16 @@ export const deleteMe = catchAsync(async (req, res, next) => {
 //   });
 // });
 
-// // Get all Users
-// export const getUsers = catchAsync(async (req, res, next) => {
-//   const users = await prisma.user.findMany();
+// Get all Users
+export const getAllUsers = catchAsync(async (req, res, next) => {
+  const users = await prisma.user.findMany();
 
-//   res.json({
-//     status: true,
-//     message: "Users Successfully fetched",
-//     data: users,
-//   });
-// });
+  res.json({
+    status: true,
+    message: "Users Successfully fetched",
+    data: users,
+  });
+});
 
 // // deleting a user
 // export const deleteUser = catchAsync(async (req, res, next) => {

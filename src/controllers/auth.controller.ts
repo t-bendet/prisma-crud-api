@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import prisma from "../client";
 import { UserPublicInfo } from "../schemas/user.schema";
@@ -184,3 +184,16 @@ export const updateMe = catchAsync(async (req, res, _next) => {
     },
   });
 });
+
+export const checkAuthorization = (...roles: UserPublicInfo["role"][]) => {
+  return (req: Request, res: Response, next: NextFunction) => {
+    // roles ['admin', 'lead-guide']. role='user'
+    if (!roles.includes(req.user!.role)) {
+      return next(
+        new AppError("You do not have permission to perform this action", 403)
+      );
+    }
+
+    next();
+  };
+};

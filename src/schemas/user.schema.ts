@@ -63,6 +63,7 @@ export type UserPublicInfo = Prisma.UserGetPayload<{
   };
 }>;
 
+type x = UserPublicInfo["role"];
 export const UserPublicInfoSchema = z
   .object({
     id: z.string(),
