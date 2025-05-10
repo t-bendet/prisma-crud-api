@@ -33,6 +33,7 @@ userRouter.post("/signup", validateSchema(UserCreateSchema), signup);
 userRouter.post("/login", validateSchema(UserLoginSchema), login);
 userRouter.get("/logout", logout);
 
+// TODO implement forgot password and reset password
 // userRouter.post('/forgotPassword', forgotPassword);
 // userRouter.patch('/resetPassword/:token', resetPassword);
 
