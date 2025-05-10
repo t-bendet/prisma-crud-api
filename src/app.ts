@@ -25,7 +25,6 @@ app.all(/.*/, (req, res, next) => {
 app.use(globalErrorHandler);
 
 // TODO error controller
-// TODO   this.find({ active: { $ne: false } });
 // TODO handle factory adaption to prisma
 // TODO  error controller edge cases(unhandledRejection)
 // TODO npx prisma db push as part of the build process
