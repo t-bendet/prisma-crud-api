@@ -50,32 +50,30 @@ export const getAllUsers = catchAsync(async (req, res, next) => {
   });
 });
 
-// // deleting a user
-// export const deleteUser = catchAsync(async (req, res, next) => {
-//   const { userid } = req.params;
+// deleting a user
+export const deleteUser = catchAsync(async (req, res, next) => {
+  const { id } = req.params;
 
-//   const user = await prisma.user.findFirst({
-//     where: {
-//       id: userid,
-//     },
-//   });
+  const user = await prisma.user.findFirst({
+    where: {
+      id,
+    },
+  });
 
-//   if (!user) {
-//     res.status(401).json({
-//       status: false,
-//       message: "User not found",
-//     });
-//   }
-//   await prisma.user.delete({
-//     where: {
-//       id: userid,
-//     },
-//   }),
-//     res.status(204).json({
-//       status: true,
-//       message: "User Successfully deleted",
-//     });
-// });
+  if (!user) {
+    return next(new AppError("User not found", 401));
+  }
+
+  await prisma.user.delete({
+    where: {
+      id,
+    },
+  }),
+    res.status(204).json({
+      status: true,
+      message: "User Successfully deleted",
+    });
+});
 
 // updating a single user
 export const updateUser = catchAsync(async (req, res, next) => {
