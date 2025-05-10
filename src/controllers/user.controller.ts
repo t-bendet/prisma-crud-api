@@ -1,4 +1,5 @@
 import prisma from "../client";
+import AppError from "../utils/appError";
 import catchAsync from "../utils/catchAsync";
 import { NextFunction, Request, Response } from "express";
 
@@ -38,18 +39,6 @@ export const deleteMe = catchAsync(async (req, res, next) => {
   });
 });
 
-// // Creating a user
-// export const createUser = catchAsync(async (req, res, next) => {
-//   const user = await prisma.user.create({
-//     data: req.body,
-//   });
-//   res.status(201).json({
-//     status: true,
-//     message: "User Successfully Created",
-//     data: user,
-//   });
-// });
-
 // Get all Users
 export const getAllUsers = catchAsync(async (req, res, next) => {
   const users = await prisma.user.findMany();
@@ -88,33 +77,30 @@ export const getAllUsers = catchAsync(async (req, res, next) => {
 //     });
 // });
 
-// // updating a single user
-// export const updateUser = catchAsync(async (req, res, next) => {
-//   const { userid } = req.params;
+// updating a single user
+export const updateUser = catchAsync(async (req, res, next) => {
+  // TODO add validation for user update
+  const { id } = req.params;
+  const user = await prisma.user.findUnique({
+    where: {
+      id,
+    },
+  });
 
-//   const user = await prisma.user.findFirst({
-//     where: {
-//       id: userid,
-//     },
-//   });
+  if (!user) {
+    return next(new AppError("User not found", 401));
+  }
 
-//   if (!user) {
-//     res.status(401).json({
-//       status: false,
-//       message: "User not found",
-//     });
-//   }
+  const updatedUser = await prisma.user.update({
+    where: {
+      id,
+    },
+    data: req.body,
+  });
 
-//   const updatedUser = await prisma.user.update({
-//     where: {
-//       id: userid,
-//     },
-//     data: req.body,
-//   });
-
-//   res.json({
-//     status: true,
-//     message: "User Successfully updated",
-//     data: updatedUser,
-//   });
-// });
+  res.json({
+    status: true,
+    message: "User Successfully updated",
+    data: updatedUser,
+  });
+});
