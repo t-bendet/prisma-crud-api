@@ -24,8 +24,6 @@ app.all(/.*/, (req, res, next) => {
 
 app.use(globalErrorHandler);
 
-// TODO apiFeatures - WIP
-
 // TODO error controller
 // TODO   this.find({ active: { $ne: false } });
 // TODO handle factory adaption to prisma

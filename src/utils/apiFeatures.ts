@@ -12,6 +12,13 @@ class PrismaAPIFeatures {
     const excludedFields = ["page", "sort", "limit", "fields"];
     excludedFields.forEach((el) => delete queryObj[el]);
 
+    // TODO filter still not working
+    // where: {
+    //   createdAt: {
+    //     gt: new Date("2026-01-01"), // Replace with your desired date
+    //   },
+    // },
+
     // Advanced filtering (e.g., gte, gt, lte, lt)
     Object.keys(queryObj).forEach((key) => {
       if (typeof queryObj[key] === "object") {
@@ -28,13 +35,15 @@ class PrismaAPIFeatures {
 
   sort() {
     if (this.queryString.sort) {
-      const sortBy = this.queryString.sort.split(",").map((field: string) => ({
-        [field.startsWith("-") ? field.substring(1) : field]: field.startsWith(
-          "-"
-        )
-          ? "desc"
-          : "asc",
-      }));
+      const sortBy = this.queryString.sort.split(",").map((field: string) => {
+        const isDescending = field.startsWith("-");
+        return {
+          [isDescending ? field.substring(1) : field]: isDescending
+            ? "desc"
+            : "asc",
+        };
+      });
+
       this.query = { ...this.query, orderBy: sortBy };
     } else {
       this.query = { ...this.query, orderBy: { createdAt: "desc" } };
