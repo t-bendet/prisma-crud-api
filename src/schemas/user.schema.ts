@@ -13,7 +13,7 @@ const PasswordConfirm = z
 
 // *  Sign Up
 
-export const UserCreateSchema = z
+export const CreateSchema = z
   .object({
     name: Name,
     email: Email,
@@ -29,7 +29,7 @@ export const UserCreateSchema = z
 
 // *  Login
 
-export const UserLoginSchema = z
+export const LoginSchema = z
   .object({
     email: Email,
     password: Password,
@@ -37,14 +37,14 @@ export const UserLoginSchema = z
   .strict() satisfies z.Schema<Prisma.UserUncheckedUpdateInput>; //
 
 //* UpdateMe
-export const UserUpdateMeSchema = z
+export const UpdateMeSchema = z
   .object({
     name: Name.optional(),
     email: Email.optional(),
   })
   .strict() satisfies z.Schema<Prisma.UserUncheckedUpdateInput>;
 
-export const UserUpdatePasswordSchema = z
+export const UpdatePasswordSchema = z
   .object({
     passwordCurrent: Password,
     password: Password,
@@ -63,8 +63,7 @@ export type UserPublicInfo = Prisma.UserGetPayload<{
   };
 }>;
 
-type x = UserPublicInfo["role"];
-export const UserPublicInfoSchema = z
+export const PublicInfoSchema = z
   .object({
     id: z.string(),
     name: Name,

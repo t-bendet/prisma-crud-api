@@ -26,21 +26,9 @@ export const UserExtensions = Prisma.defineExtension({
           //* and then the changedPasswordAfter function will fail the auth process
           args.data.passwordChangedAt = new Date(Date.now() - 1000);
         }
-        // args.data = UserUpdateInput.partial().parse(args.data);
         return query(args);
       },
-      updateMany({ args, query }) {
-        // args.data = UserCreateInput.partial().parse(args.data);
-        return query(args);
-      },
-      upsert({ args, query }) {
-        // args.create = UserCreateInput.parse(args.create);
-        // args.update = UserCreateInput.partial().parse(args.update);
-        return query(args);
-      },
-      deleteMany({ args, query }) {
-        return query(args);
-      },
+      // *  soft delete all find methods will not return users marked as not active
       findUnique({ args, query }) {
         args = {
           ...args,
@@ -80,11 +68,6 @@ export const UserExtensions = Prisma.defineExtension({
             active: { not: false },
           },
         };
-        // args.where = UserWhereUniqueInput.parse(args.where);
-        return query(args);
-      },
-      findRaw({ args, query }) {
-        // args.where = UserWhereUniqueInput.parse(args.where);
         return query(args);
       },
       findUniqueOrThrow({ args, query }) {
@@ -95,8 +78,6 @@ export const UserExtensions = Prisma.defineExtension({
             active: { not: false },
           },
         };
-
-        // args.where = UserWhereUniqueInput.parse(args.where);
         return query(args);
       },
     },
