@@ -29,12 +29,7 @@ userRouter.get("/logout", authController.logout);
 
 // * USER ROUTES (protected)
 
-// TODO validate user added to request object?
-userRouter.use(authController.authenticate, async (req, _res, next) => {
-  // console.log("User authenticated");
-  // console.log((req as AuthorizedRequest).user);
-  next();
-});
+userRouter.use(authController.authenticate);
 
 userRouter.patch(
   "/updateMyPassword",
