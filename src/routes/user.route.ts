@@ -1,37 +1,27 @@
 import express from "express";
-import {
-  signup,
-  login,
-  logout,
-  authenticate,
-  updatePassword,
-  updateMe,
-  checkAuthorization,
-} from "../controllers/auth.controller";
+import * as authController from "../controllers/auth.controller";
 import { validateSchema } from "../middlewares/validation.middleware";
-import {
-  UserCreateSchema,
-  UserLoginSchema,
-  UserUpdatePasswordSchema,
-  UserUpdateMeSchema,
-} from "../schemas/user.schema";
-import {
-  getMe,
-  getUser,
-  deleteMe,
-  getAllUsers,
-  updateUser,
-  deleteUser,
-} from "../controllers/user.controller";
+import * as userSchema from "../schemas/user.schema";
+import * as userController from "../controllers/user.controller";
 
 // Users layout Route
 const userRouter = express.Router();
 
 // * AUTH ROUTES (open for all)
 
-userRouter.post("/signup", validateSchema(UserCreateSchema), signup);
-userRouter.post("/login", validateSchema(UserLoginSchema), login);
-userRouter.get("/logout", logout);
+userRouter.post(
+  "/signup",
+  validateSchema(userSchema.CreateSchema),
+  authController.signup
+);
+
+userRouter.post(
+  "/login",
+  validateSchema(userSchema.LoginSchema),
+  authController.login
+);
+
+userRouter.get("/logout", authController.logout);
 
 // TODO implement forgot password and reset password
 // userRouter.post('/forgotPassword', forgotPassword);
@@ -40,7 +30,7 @@ userRouter.get("/logout", logout);
 // * USER ROUTES (protected)
 
 // TODO validate user added to request object?
-userRouter.use(authenticate, async (req, _res, next) => {
+userRouter.use(authController.authenticate, async (req, _res, next) => {
   // console.log("User authenticated");
   // console.log((req as AuthorizedRequest).user);
   next();
@@ -48,18 +38,30 @@ userRouter.use(authenticate, async (req, _res, next) => {
 
 userRouter.patch(
   "/updateMyPassword",
-  validateSchema(UserUpdatePasswordSchema),
-  updatePassword
+  validateSchema(userSchema.UpdatePasswordSchema),
+  authController.updatePassword
 );
-userRouter.get("/me", getMe, getUser);
 
-userRouter.patch("/updateMe", validateSchema(UserUpdateMeSchema), updateMe);
-userRouter.delete("/deleteMe", deleteMe);
+userRouter.get("/me", userController.getMe, userController.getUser);
+
+userRouter.patch(
+  "/updateMe",
+  validateSchema(userSchema.UpdateMeSchema),
+  userController.updateMe
+);
+
+userRouter.delete("/deleteMe", userController.deleteMe);
 
 // * ADMIN ROUTES (restricted to admin roles)
 
-userRouter.use(checkAuthorization("ADMIN"));
-userRouter.route("/").get(getAllUsers);
-userRouter.route("/:id").get(getUser).patch(updateUser).delete(deleteUser);
+userRouter.use(authController.checkAuthorization("ADMIN"));
+
+userRouter.route("/").get(userController.getAllUsers);
+
+userRouter
+  .route("/:id")
+  .get(userController.getUser)
+  .patch(userController.updateUser)
+  .delete(userController.deleteUser);
 
 export default userRouter;

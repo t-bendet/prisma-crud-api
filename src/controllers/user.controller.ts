@@ -102,3 +102,19 @@ export const updateUser = catchAsync(async (req, res, next) => {
     data: updatedUser,
   });
 });
+
+export const updateMe = catchAsync(async (req, res, _next) => {
+  const updatedUser = await prisma.user.update({
+    where: { id: req.user?.id },
+    data: {
+      ...req.body,
+    },
+  });
+
+  res.status(200).json({
+    status: "success",
+    data: {
+      user: updatedUser,
+    },
+  });
+});
